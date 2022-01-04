@@ -62,10 +62,14 @@ wss.on('connection', function(ws) {
                 Object.keys(sockets).forEach(key => {
                     // don't resend to original broadcaster
                     if (key == data.from) {return}
-                    s = sockets[key];
                     data.type = 'onBroadcast';
-                    s.send(JSON.stringify(data));
-                    console.log("sent onBroadcast");
+                    s = sockets[key];
+                    if (s) {
+                        s.send(JSON.stringify(data));
+                        console.log("sent onBroadcast to " + key);
+                    } else {
+                        console.log("could not send because sockets[" + key + "] is undefined");
+                    }
                 });
                 break;
             case 'message':
