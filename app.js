@@ -1,5 +1,5 @@
 var express = require("express");
-const { connect } = require("http2");
+//const { connect } = require("http2");
 var app = express();
 var server = require("http").Server(app);
 
@@ -9,7 +9,8 @@ app.get("/", function(req, res)
 });
 app.use("/client", express.static(__dirname + "/client"));
 
-var port = 8080;
+var port = process.env.PORT || 3000;
+
 server.listen(port);
 console.log("Server started. Port = " + port);
 
