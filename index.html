@@ -1,15 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <script src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="js/phaser.min.js"></script>
-    <title>Basic multiplayer online game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.socket.io/4.4.0/socket.io.min.js"></script>
+    <title>hai!touch Server</title>
 </head>
+
 <body>
-    <div id='game'></div>
+    <h1>Hello, World</h1>
+    <button onclick="getMyName();">Get My Name</button>
+    <button onclick="sendMyNameToAllClients();">Send my Name to all Clients</button>
+    <script>
+        var socket = io();
+
+        socket.emit("hello", {
+            message: "Hello from client!"
+        });
+
+        socket.on("onGetMyName", function(data) {
+            console.log("This client's name is: " + data.name);
+        });
+
+        socket.on("onSendMyNameToAllClients", function(data){
+            console.log(`A client named ${data.name} broadcast its name.`);
+        });
+
+        function getMyName(){
+            socket.emit("getMyName");
+        }
+
+        function sendMyNameToAllClients(){
+            socket.emit("sendMyNameToAllClients");
+        }
+    </script>
 </body>
-<script src="js/game.js" type="text/javascript"></script>
-<script src="js/main.js" type="text/javascript"></script>
-<script src="js/client.js" type="text/javascript"></script>
+
 </html>

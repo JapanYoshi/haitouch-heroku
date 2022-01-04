@@ -1,30 +1,31 @@
 {
-    "name": "basic-server",
-    "version": "1.0.0",
-    "description": "Very basic multiplayer server",
-    "main": "server.js",
-    "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1",
-      "start": "node server.js"
-    },
-    "repository": {
-      "type": "git",
-      "url": "git+https://github.com/JapanYoshi/haitouch-heroku.git"
-    },
-    "keywords": [
-      "Multiplayer",
-      "game",
-      "Node.js",
-      "socket.io"
-    ],
-    "author": "Haley Wakamatsu",
-    "license": "MIT",
-    "bugs": {
-      "url": "https://github.com/JapanYoshi/haitouch-heroku/issues"
-    },
-    "homepage": "https://github.com/JapanYoshi/haitouch-heroku#readme",
-    "dependencies": {
-      "express": "^4.15.2",
-      "socket.io": "^1.7.3"
-    }
+  "name": "basic-server",
+  "version": "1.0.0",
+  "description": "Very basic multiplayer server",
+  "main": "server.js",
+  "scripts": {
+    "start": "app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JapanYoshi/haitouch-heroku.git"
+  },
+  "keywords": [
+    "Multiplayer",
+    "game",
+    "Node.js",
+    "socket.io"
+  ],
+  "author": "Haley Wakamatsu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JapanYoshi/haitouch-heroku/issues"
+  },
+  "homepage": "https://github.com/JapanYoshi/haitouch-heroku#readme",
+  "dependencies": {
+    "express": "^4.17.2",
+    "shortid": "^2.2.16",
+    "socket.io": "^4.4.0"
   }
+}
