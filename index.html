@@ -48,6 +48,16 @@
                     console.log('Undefined message type: ' + data.type);
             }
         };
+
+        ws.onclose(event => {
+            document.getElementById("myName").innerText = "N/A";
+            document.getElementById("output").innerText = "Connection closed";
+        })
+
+        ws.onerror(event => {
+            document.getElementById("myName").innerText = "N/A";
+            document.getElementById("output").innerText = "An error occurred.";
+        })
         
         function getMyName(){
             console.log(JSON.stringify({

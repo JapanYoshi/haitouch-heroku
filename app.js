@@ -34,6 +34,7 @@ wss.on('connection', function(ws) {
         name: name
     }));
     console.log("sent onGetMyName (initialize connection)");
+    console.log("sockets dict now has these keys: " + Object.keys(sockets))
     ws.on('message', (msg) => {
         var data;
         try {
@@ -64,11 +65,12 @@ wss.on('connection', function(ws) {
                     if (key == data.from) {return}
                     data.type = 'onBroadcast';
                     s = sockets[key];
+                    // it SHOULD exist because I'm taking the keys from that dictionary
                     if (s) {
                         s.send(JSON.stringify(data));
                         console.log("sent onBroadcast to " + key);
                     } else {
-                        console.log("could not send because sockets[" + key + "] is undefined");
+                        console.log("could not send because sockets[" + key + "] is " + sockets[key]);
                     }
                 });
                 break;
@@ -95,7 +97,7 @@ wss.on('connection', function(ws) {
 
     // When a socket closes, or disconnects, remove it from the array.
     ws.on('close', function() {
-        sockets[name] = undefined;
+        delete sockets[name];
     });
 });
 
