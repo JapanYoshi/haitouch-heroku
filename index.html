@@ -5,35 +5,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://cdn.socket.io/4.4.0/socket.io.min.js"></script>
     <title>hai!touch Server</title>
 </head>
 
 <body>
     <h1>Hello, World</h1>
+    <p>This client's name is: <strong id="myName">Connecting</strong></p>
     <button onclick="getMyName();">Get My Name</button>
-    <button onclick="sendMyNameToAllClients();">Send my Name to all Clients</button>
+    <p id="output">Log goes here.</p>
+    <h3>Send a message to a specific client</h3>
+    <input id="name" type="text" placeholder="Name"/>
+    <input id="message" type="text" placeholder="Content"/>
+    <button onclick="sendMessage();">Send</button>
+    <button onclick="broadcast();">Send to all Clients</button>
     <script>
-        var socket = io();
-
-        socket.emit("hello", {
-            message: "Hello from client!"
-        });
-
-        socket.on("onGetMyName", function(data) {
-            console.log("This client's name is: " + data.name);
-        });
-
-        socket.on("onSendMyNameToAllClients", function(data){
-            console.log(`A client named ${data.name} broadcast its name.`);
-        });
-
+        var host = location.origin.replace(/^http/, 'ws')
+        var ws = new WebSocket(host);
+        ws.onmessage = (msg) => {
+            var data;
+            try {
+                data = JSON.parse(msg.data);
+                console.log(`WebSocket message received: `, data);
+            } catch (e) {
+                document.getElementById('output').innerText = `Invalid JSON: ${msg.data}`;
+            }
+            switch (data.type) {
+                case 'onGetMyName':
+                    sessionStorage.setItem("name", data.name);
+                    document.getElementById("myName").innerText = data.name;
+                    break
+                case 'onBroadcast':
+                    document.getElementById("output").innerText = (
+                        `A client named ${data.from} broadcast this message: ${data.message}`
+                    );
+                    break
+                case 'onMessage':
+                    document.getElementById("output").innerText = (
+                        `A client named ${data.from} sent you this message: ${data.message}`
+                    );
+                    break
+                default:
+                    console.log('Undefined message type: ' + data.type);
+            }
+        };
+        
         function getMyName(){
-            socket.emit("getMyName");
+            console.log(JSON.stringify({
+                type: 'getMyName'
+            }));
+            ws.send(JSON.stringify({
+                type: 'getMyName'
+            }));
         }
 
-        function sendMyNameToAllClients(){
-            socket.emit("sendMyNameToAllClients");
+        function broadcast(){
+            ws.send(JSON.stringify({
+                type: 'broadcast',
+                from: sessionStorage.getItem("name"),
+                message: document.getElementById("message").value
+            }));
+        }
+
+        function sendMessage(){
+            ws.send(JSON.stringify({
+                type: 'message',
+                from: sessionStorage.getItem("name"),
+                to: document.getElementById("name").value,
+                message: document.getElementById("message").value
+            }));
         }
     </script>
 </body>

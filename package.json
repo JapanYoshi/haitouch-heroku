@@ -26,6 +26,6 @@
   "dependencies": {
     "express": "^4.17.2",
     "shortid": "^2.2.16",
-    "socket.io": "^4.4.0"
+    "ws": "^8.4.0"
   }
 }
