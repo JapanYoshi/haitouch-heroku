@@ -23,7 +23,7 @@ console.log("Server started. Port = " + port);
 var shortid = require('shortid');
 
 
-// will this work?
+// This seems like the problem:
 let sockets = {};
 wss.on('connection', function(ws) {
     var name = shortid.generate();
