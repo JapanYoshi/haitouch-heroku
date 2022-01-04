@@ -3,8 +3,8 @@ var express = require("express");
 var app = express();
 var server = require("http").Server(app);
 
-app.get("/", function(req, res)
-{
+app.get("/", function(req, res){
+    console.log("get request received")
     res.sendFile(__dirname + "/index.html");
 });
 app.use("/client", express.static(__dirname + "/client"));
