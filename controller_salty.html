@@ -1,0 +1,327 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<!--Anything that's not between the "START INJECTED HTML" comment and the "END INJECTED HTML" comment won't be used in the app.-->
+
+<!--START INJECTED HTML-->
+    <div id="game">
+        <style>
+            @font-face {
+                font-family: '_Barlow';
+                src: local('Barlow Semi Condensed Medium'), url('salty/400.ttf');
+            }
+            @font-face {
+                font-family: '_Barlow';
+                font-style: italic;
+                src: local('Barlow Semi Condensed Medium Italic'), url('salty/400i.ttf');
+            }
+            @font-face {
+                font-family: '_Barlow';
+                font-weight: bold;
+                src: local('Barlow Semi Condensed Extra Bold'), url('salty/700.ttf');
+            }
+            @font-face {
+                font-family: '_Barlow';
+                font-weight: bold;
+                font-style: italic;
+                src: local('Barlow Semi Condensed Extra Bold Italic'), url('salty/700i.ttf');
+            }
+            :root {
+                --col-light-green: #13b65e;
+                --col-green: #00c870;
+                --col-dark-green: #0b852e;
+                --col-light-red: #f878a3;
+                --col-red: #d3205b;
+                --col-dark-red: #53102a;
+                --col-lightgray: #999999;
+                --col-darkgray: #3b3943;
+    
+                --col-sorta: #ea9700;
+                --col-kinda: #0087df;
+                --col-both: #7cff6e;
+            }
+            html {
+                font-family: '_Barlow', sans-serif;
+            }
+            body {
+                margin: 0;
+                -webkit-touch-callout: none; /* iOS Safari */
+                  -webkit-user-select: none; /* Safari */
+                   -khtml-user-select: none; /* Konqueror HTML */
+                     -moz-user-select: none; /* Old versions of Firefox */
+                      -ms-user-select: none; /* Internet Explorer/Edge */
+                          user-select: none; /* Non-prefixed version, currently
+                                                supported by Chrome, Edge, Opera and Firefox */
+            }
+            #game {
+                background: black;
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+            header {
+                position: relative;
+                z-index: 64;
+                flex-grow: 0;
+                flex-shrink: 0;
+                width: 100%;
+                height: 3rem;
+                line-height: 3rem;
+                font-size: 1.5rem;
+                text-align: center;
+                background-color: var(--col-dark-green, green);
+                background: linear-gradient(
+                    0deg,
+                    var(--col-dark-green) 33%,
+                    var(--col-green) 100%);
+                color: white;
+                margin: -1rem 0rem 0;
+                padding: 1rem 0rem 0;
+                box-shadow: 0 0 0.25rem black;
+            }
+            article {
+                position: relative;
+                display: block;
+                flex: auto;
+                min-height: 0;
+                overflow: hidden;
+            }
+            article:not(.active) {
+                display: none;
+            }
+            .logo {
+                width: 100%;
+                height: 100%;
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+            article#standby {
+                background-color: var(--col-dark-green);
+                background: radial-gradient(circle,
+                    rgba(5,43,20,1) 0%,
+                    rgba(54,92,69,1) 50%,
+                    rgba(82,120,97,1) 100%);
+            }
+            article#question {
+                background-color: var(--col-dark-red);
+            }
+            article#sorta {
+                background: var(--col-darkgray);
+                background: radial-gradient(circle,
+                    black 0%,
+                    var(--col-darkgray) 50%,
+                    var(--col-lightgray) 100%);
+            }
+            article#gib {
+                background: #26759f;
+            }
+            .questionFlex {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                display: flex;
+                flex-direction: column;
+            }
+            .question {
+                flex: 0 0 auto;
+                margin: 1rem;
+                padding: 2rem;
+                border-radius: 0.5rem;
+                background-color: white;
+                background: linear-gradient(
+                    0deg,
+                    rgba(235,235,235,1) 50%,
+                    rgba(255,255,255,1) 100%);
+                color: black;
+                font-size: 1.25rem;
+            }
+            .qHidden .question {
+                opacity: 0.3;
+                color: transparent;
+            }
+            button {
+                font-family: inherit;
+                font-size: inherit;
+            }
+            .options {
+                flex: 1 0 auto;
+                overflow-x: hidden;
+                min-height: 0;
+                flex-basis: 0;
+                overflow-y: scroll;
+            }
+            .option {
+                display: block;
+                width: fill;
+                text-align: left;
+                background-color: var(--col-darkgray);
+                color: white;
+                border: 1px solid var(--col-lightgray);
+                border-radius: 0.25rem;
+                margin: 0.5rem;
+                margin-left: 3rem;
+                padding: 1rem;
+            }
+            .oHidden .option {
+                opacity: 0.3;
+                color: transparent;
+            }
+            .btnLifesaver {
+                flex: 0 0 auto;
+                height: 3rem;
+                background-color: white;
+                background: linear-gradient(
+                    0deg,
+                    rgba(235,235,235,1) 50%,
+                    rgba(255,255,255,1) 100%);
+                color: black;
+                margin: 1rem;
+                padding: 0.5rem;
+                font-size: 1.25rem;
+                line-height: 2rem;
+                text-align: left;
+            }
+            .btnLifesaver > img {
+                display: float;
+                float: left;
+                width: 2rem;
+                height: 2rem;
+                margin-right: 0.5rem;
+            }
+            .oHidden .btnLifesaver {
+                opacity: 0.3;
+            }
+            .sorta {
+                flex: 1 0 auto;
+                flex-basis: 0;
+                text-align: center;
+                margin: 1rem;
+            }
+            .sortaA, .sortaB, .sortaBoth {
+                font-size: 1.5rem;
+                padding: 2rem 1rem;
+                border-radius: 0.25rem;
+                color: black;
+            }
+            .sortaBoth {
+                margin-left: 3rem;
+                margin-right: 3rem;
+                background: var(--col-both);
+                margin-bottom: 1rem;
+            }
+            .oHidden .sortaA, .oHidden .sortaB, .oHidden .sortaBoth {
+                opacity: 0.3;
+                color: transparent;
+            }
+            .sortaAB {
+                display: flex;
+                flex-direction: row;
+            }
+            .sortaA {
+                flex-basis: 0;
+                flex-grow: 1;
+                max-width: 50vw;
+                background: var(--col-sorta);
+                margin-right: 0.5rem;
+            }
+            .sortaB {
+                flex-basis: 0;
+                flex-grow: 1;
+                max-width: 50vw;
+                background: var(--col-kinda);
+                margin-left: 0.5rem;
+            }
+            #gib input {
+                border-radius: 0.25rem;
+                margin: 0 1rem;
+                padding: 1rem;
+                font-size: 1rem;
+                font-family: inherit;
+                border: 0.125rem var(--col-lightgray);
+            }
+            .buzzer {
+                margin: 1rem;
+                border-radius: 0.25rem;
+                padding: 2rem;
+                background: linear-gradient(
+                    0deg,
+                    var(--col-red) 50%,
+                    var(--col-light-red) 100%);
+                text-align: center;
+                font-size: 1.5rem;
+            }
+            .oHidden .buzzer {
+                color: var(--col-dark-red);
+                opacity: 0.3;
+            }
+        </style>
+        <header>
+            WWWWWWWWWWWW
+        </header>
+        <article class="active" id="standby">
+            <div class="logo logoGame" style="background-image: url('salty/logo_game.png')"></div>
+            <div class="logo logoLS" style="background-image: url('salty/lifesavers.png')"></div>
+            <div class="logo logoRound1" style="background-image: url('salty/round_1.png')"></div>
+            <div class="logo logoRound2" style="background-image: url('salty/round_2.png')"></div>
+            <div class="logo logoRound3" style="background-image: url('salty/round_3.png')"></div>
+        </article>
+        <article class="" id="question">
+            <div class="questionFlex">
+                <div class="question">
+                    If you smoked weed that made you feel like a bagel, what would you say?
+                </div>
+                <div class="options">
+                    <div class="option">
+                        “Dude, I’m so <strong>baked and fried</strong> right now.”
+                    </div>
+                    <div class="option">
+                        “Whoa, I’m absolutely <strong>steamed and baked</strong>.”
+                    </div>
+                    <div class="option">
+                        “Man, I feel totally <strong>boiled and baked</strong>.”
+                    </div>
+                    <div class="option">
+                        “Holy $#%&, I feel like I’m <strong>baked and boiled</strong>, dude!”
+                    </div>
+                </div>
+                <div class="btnLifesaver">
+                    <img src="salty/lifesaver.png"> Use a Lifesaver (eliminate 2 choices)
+                </div>
+            </div>
+        </article>
+        <article class="" id="sorta">
+            <div class="logo" style="background-image: url('salty/logo_sorta.png')"></div>
+            <div class="questionFlex">
+                <div class="question">
+                    quarter-pound beef patty
+                </div>
+                <div class="sorta">
+                    <div class="sortaBoth">both</div>
+                    <div class="sortaAB">
+                        <div class="sortaA">Big Mac®</div>
+                        <div class="sortaB">Whopper®</div>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <article class="" id="gib">
+            <div class="logo" style="background-image: url('salty/logo_gib.png')"></div>
+            <div class="questionFlex">
+                <div class="question">
+                    Wow, gourmet wing? Smith Bauer.
+                </div>
+                <input type="text" disabled/>
+                <div class="buzzer">
+                    Buzz in!
+                </div>
+            </div>
+        </article>
+    </div>
+    <!--END INJECTED HTML-->
+</body>

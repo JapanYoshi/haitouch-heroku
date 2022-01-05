@@ -16,6 +16,14 @@ app.get("/client.css", function(req, res){
     //console.log("get request received")
     res.sendFile(__dirname + "/client.css");
 });
+app.get("/controller_salty.html", function(req, res){
+    //console.log("get request received")
+    res.sendFile(__dirname + "/controller_salty.html");
+});
+app.get("/salty/:resName", function(req, res) {
+    // use params to let people fetch any resource in the folder
+    res.sendFile(__dirname + "/salty/" + req.params.resName);
+})
 app.use("/client", express.static(__dirname + "/client"));
 
 var port = process.env.PORT || 3001;
@@ -121,13 +129,6 @@ wss.on('connection', function(ws) {
                 // expected keys: data.roomCode, data.gameName
                 if ("roomCode" in data && "gameName" in data) {
                     // OK
-                    for (const [k, v] of Object.entries(rooms)) {
-                        if (v.host == hostName) {
-                            // room already exists
-                            sendError("You are already hosting a room with the room code " + k);
-                            break;
-                        }
-                    }
                     if (data.roomCode.length != 4) {
                         sendError("Room code must be 4 characters long.");
                         break;
@@ -136,11 +137,27 @@ wss.on('connection', function(ws) {
                         sendError("Game name must not be empty.");
                         break;
                     }
+                    let found = false
+                    for (const [k, v] of Object.entries(rooms)) {
+                        if (v.host == name) {
+                            // room already exists
+                            sendError("You are already hosting a room with the room code " + k);
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found) break;
+                    if (rooms[data.roomCode]) {
+                        // room exists
+                        sendError("The room code " + data.roomCode + " is already taken.");
+                        break;
+                    }
                     rooms[data.roomCode] = {
                         host: name,
                         gameName: data.gameName,
                         status: ROOM_STAT.OPEN,
-                        playerNames: []
+                        playerNames: [],
+                        controller: "controller_salty.html" // hardcoded because there's only one game
                     };
                     // confirm success
                     ws.send(JSON.stringify({
@@ -163,19 +180,19 @@ wss.on('connection', function(ws) {
                     }
                     if (rooms[data.roomCode]) {
                         // room exists
-                        ws.send({
+                        ws.send(JSON.stringify({
                             type: 'roomFound',
                             gameName: rooms[data.roomCode].gameName,
                             status: rooms[data.roomCode].status
-                        });
+                        }));
                     } else {
                         // room doesn't exist
-                        ws.send({
+                        ws.send(JSON.stringify({
                             type: 'roomNotFound'
-                        });
+                        }));
                     }
                 }
-
+                break;
             case 'joinRoom':
                 console.log("received joinRoom");
                 // expected keys: data.roomCode, data.nick (may be empty)
@@ -214,7 +231,11 @@ wss.on('connection', function(ws) {
                             nick: data.nick
                         }));
                         rm.playerNames.push(name);
-                        sendOk("Joined Room " + data.roomCode + " successfully.");
+                        ws.send(JSON.stringify({
+                            type: 'onJoinRoom',
+                            message: "Joined Room " + data.roomCode + " successfully.",
+                            controller: rm.controller
+                        }) );
                         console.log(rm);
                     } else {
                         // room does not exist
@@ -223,6 +244,40 @@ wss.on('connection', function(ws) {
                 } else {
                     // Not enough data
                     sendError("joinRoom message must contain the following keys: roomCode (string length 4), nick (string length 0 to 12).");
+                }
+                break;
+            case 'sendToRoom':
+                console.log("received sendToRoom");
+                // expected keys: roomCode (string length 4). should contain additional data
+                if (rooms[data.roomCode]) {
+                    // room exists
+                    if (rooms[data.roomCode].host == name) {
+                        rooms[data.roomCode].playerNames.forEach((e) => {
+                            if (e != name) {
+                                sockets[e].send(JSON.stringify(data));
+                            }
+                        });
+                    } else {
+                        sendError("You are not the host of room " + data.roomCode + ".");
+                    }
+                } else {
+                    sendError("Could not find a room with that room code (" + data.roomCode + ").");
+                }
+                break;
+            case 'sendToHost':
+                console.log("received sendToHost");
+                // expected keys: roomCode (string length 4). should contain additional data
+                if (rooms[data.roomCode]) {
+                    // room exists
+                    if (rooms[data.roomCode].playerNames.includes(name)) {
+                        sockets[
+                            rooms[data.roomCode].host
+                        ].send(JSON.stringify(data));
+                    } else {
+                        sendError("You are not in room " + data.roomCode + ".");
+                    }
+                } else {
+                    sendError("Could not find a room with that room code (" + data.roomCode + ").");
                 }
                 break;
             case 'closeRoom':
@@ -242,20 +297,28 @@ wss.on('connection', function(ws) {
 
     // Close the room, whether due to unintentional disconnection or due to manual closing.
     function closeRoomBy(hostName) {
+        let found = false
         for (const [k, v] of Object.entries(rooms)) {
             if (v.host == hostName) {
+                found = true
+                console.log("Found the room. Room code is " + k);
                 v.playerNames.forEach((e) => {
-                    sockets[e].send(
-                        data.type = 'onRoomClosed',
-                        message = ""
-                    );
+                    sockets[e].send(JSON.stringify({
+                        type: 'onRoomClosed',
+                        message: ""
+                    }) );
+                    console.log("Notified " + e + " that the room is closed.");
                 });
                 ws.send(JSON.stringify({
                     type: "onRoomClose",
                     message: "Room " + k + " closed."
                 }));
                 delete rooms[k];
+                return
             }
+        }
+        if (!found) {
+            sendError("You are not hosting a room.");
         }
     }
 

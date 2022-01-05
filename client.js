@@ -3,21 +3,29 @@ document.addEventListener('DOMContentLoaded', ()=>{
     var myName = document.getElementById('myName');
     var host = location.origin.replace(/^http/, 'ws');
     var ws = new WebSocket(host);
-    var room = ""
+    function heartbeat(){
+        ws.send(JSON.stringify({
+            type: 'sendToHost',
+            roomCode: sessionStorage.getItem("room"),
+            data: "heartbeat"
+        }));
+    }
     ws.onmessage = (msg) => {
         var data;
         try {
             data = JSON.parse(msg.data);
-            console.log(`WebSocket message received: `, data);
         } catch (e) {
             output.innerText = `Invalid JSON: ${msg.data}`;
+            return
         }
+        console.log(`WebSocket message received: `, data);
         switch (data.type) {
-            /* General/Debug */
+            /* General */
             case 'onGetMyName':
                 localStorage.setItem("name", data.name);
                 myName.innerText = data.name;
                 break
+            /* Debugging. This won't be used in the actual app because all the communication will be within the room */
             case 'onBroadcast':
                 output.innerText = (
                     `A client named ${data.from} broadcast this message: ${data.message}`
@@ -34,8 +42,27 @@ document.addEventListener('DOMContentLoaded', ()=>{
             /* Joining a room */
             case 'onJoinRoom':
                 output.innerText = data.message;
+                // fetch the controller file
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = () => {
+                    if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                        //console.log(xmlHttp.responseText);
+                        // manually extract the element div.game using specific comments
+                        let header = "<!--START INJECTED HTML-->"
+                        let start = xmlHttp.responseText.search(header) + header.length;
+                        let end = xmlHttp.responseText.search("<!--END INJECTED HTML-->");
+                        let htmlText = xmlHttp.responseText.substring(start, end);
+                        document.body.innerHTML = htmlText;
+                        setInterval(heartbeat, 1000);
+                    }
+                }
+                xmlHttp.open("GET", data.controller, true);
+                xmlHttp.send(null)
                 break
-            
+            case 'onRoomClosed':
+                alert("Room closed.");
+                location.reload();
+                break
             default:
                 console.log('Undefined message type: ' + data.type);
         }
@@ -57,10 +84,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
     
     ws.onclose = (event => {
         myName.innerText = "Disconnected";
+        alert("Room closed.");
+        location.reload();
     });
     
     ws.onerror = (event => {
         myName.innerText = "Error";
+        alert("Room closed.");
+        location.reload();
     });
     
     function getMyName() {
@@ -140,6 +171,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
      */
     function joinRoom() {
         let room = inputRc.value.toUpperCase();
+        sessionStorage.setItem("room", room);
         let nick = inputNick.value.toUpperCase();
         ws.send(JSON.stringify({
             type: 'joinRoom',
@@ -175,6 +207,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }));
     }
     document.getElementById("btnCloseRoom").addEventListener("click", closeRoom);
+    /*
+    *  FOR TESTING: Send a message to all clients in the room.
+    */
+   function sendToRoom(){
+       ws.send(JSON.stringify({
+           type: 'sendToRoom',
+           roomCode: inputRc.value.toUpperCase(),
+           data: document.getElementById("message").value
+        }));
+    }
+    document.getElementById("btnSendToRoom").addEventListener("click", sendToRoom);
     
 
     console.log("client.js event function just ran.")
