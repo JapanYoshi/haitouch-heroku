@@ -172,7 +172,7 @@ wss.on('connection', function(ws) {
             case 'queryRoom':
                 console.log("received queryRoom");
                 // expected keys: data.roomCode, data.nick (may be empty)
-                if ("roomCode" in data && "nick" in data) {
+                if ("roomCode" in data) {
                     // OK
                     if (data.roomCode.length != 4) {
                         sendError("Room code must be 4 characters long.");
@@ -185,11 +185,13 @@ wss.on('connection', function(ws) {
                             gameName: rooms[data.roomCode].gameName,
                             status: rooms[data.roomCode].status
                         }));
+                        console.log("room exists, sent roomFound message");
                     } else {
                         // room doesn't exist
                         ws.send(JSON.stringify({
                             type: 'roomNotFound'
                         }));
+                        console.log("room doesn't exist, sent roomNotFound message");
                     }
                 }
                 break;
@@ -228,6 +230,7 @@ wss.on('connection', function(ws) {
                         // all clear, join.
                         sockets[rm.host].send(JSON.stringify({
                             type: 'onPlayerJoin',
+                            name: name,
                             nick: data.nick
                         }));
                         rm.playerNames.push(name);
@@ -253,9 +256,7 @@ wss.on('connection', function(ws) {
                     // room exists
                     if (rooms[data.roomCode].host == name) {
                         rooms[data.roomCode].playerNames.forEach((e) => {
-                            if (e != name) {
-                                sockets[e].send(JSON.stringify(data));
-                            }
+                            sockets[e].send(JSON.stringify(data));
                         });
                     } else {
                         sendError("You are not the host of room " + data.roomCode + ".");
@@ -291,11 +292,28 @@ wss.on('connection', function(ws) {
 
     // When a socket closes, or disconnects, remove it from the array.
     ws.on('close', function() {
-        closeRoomBy(name);
+        if (closeRoomBy(name)) {
+            let found = false
+            for (const [k, v] of Object.entries(rooms)) {
+                for (i = 0; i < v.playerNames.length; i++) {
+                    if (v.playerNames[i] == name) {
+                        found = true;
+                        v.playerNames.splice(i, 1);
+                        sockets[v.host].send(JSON.stringify({
+                            type: 'onRoomLeave',
+                            message: name
+                        }));
+                        break
+                    }
+                }
+                if (found) {break;}
+            }
+        };
         delete sockets[name];
     });
 
     // Close the room, whether due to unintentional disconnection or due to manual closing.
+    // Returns false if the room was found and closed. Returns true otherwise.
     function closeRoomBy(hostName) {
         let found = false
         for (const [k, v] of Object.entries(rooms)) {
@@ -314,11 +332,12 @@ wss.on('connection', function(ws) {
                     message: "Room " + k + " closed."
                 }));
                 delete rooms[k];
-                return
+                return false
             }
         }
         if (!found) {
             sendError("You are not hosting a room.");
+            return true
         }
     }
 

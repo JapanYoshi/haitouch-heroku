@@ -1,6 +1,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        /** START INJECTED SCRIPT **/
+        console.log("ws =", ws);
+        alert("controller loaded");
+        window.gameSpecificHandler = (data) => {
+            console.log("game-specific handling of message type: " + data.type);
+            return false; // no problem
+        }
+        function sendToHost(data) {
+            // roomCode: string length 4
+            // additional data with any keys
+            data.type = 'sendToHost';
+            data.roomCode = sessionStorage.getItem("room");
+            data.from =  localStorage.getItem("name");
+            ws.send(JSON.stringify(data));
+            console.log("sent the following to host:", data);
+        }
+        function sendButton(which, reason) {
+            let data = {
+                action: 'buttonPress',
+                which: which,
+                reason: reason
+            };
+            sendToHost(data)
+        }
+        /* Add event handlers to send input */
+        /* Debug keypad */
+        let debugKeys = document.getElementById('debugKeypad').querySelectorAll('.debugKey');
+        debugKeys.forEach((el, i, parent) => {
+            el.addEventListener('click', () => {
+                el.classList.add('pressed');
+                sendButton(i, 'debug keypad');
+                setTimeout(() => {
+                    el.classList.remove('pressed')
+                }, 50);
+            });
+        })
+        /** END INJECTED SCRIPT **/
+    </script>
 </head>
 <body>
 <!--Anything that's not between the "START INJECTED HTML" comment and the "END INJECTED HTML" comment won't be used in the app.-->
@@ -260,6 +299,41 @@
                 color: var(--col-dark-red);
                 opacity: 0.3;
             }
+
+            #debugKeypad {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                display: flex;
+                flex-flow: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #debugKeypad .debugRow {
+                width: 100vw;
+            }
+
+            #debugKeypad .debugKey {
+                display: inline-block;
+                background: var(--col-dark-red);
+                color: white;
+                width: 30vw;
+                max-width: 5rem;
+                height: 5rem;
+                border-radius: 0.25rem;
+                text-align: center;
+                font-size: 3rem;
+                line-height: 3rem;
+                margin: 0.5rem 0;
+                padding: 2rem;
+            }
+
+            #debugKeypad .debugKey.pressed {
+                background: var(--col-light-red);
+            }
         </style>
         <header>
             WWWWWWWWWWWW
@@ -270,6 +344,18 @@
             <div class="logo logoRound1" style="background-image: url('salty/round_1.png')"></div>
             <div class="logo logoRound2" style="background-image: url('salty/round_2.png')"></div>
             <div class="logo logoRound3" style="background-image: url('salty/round_3.png')"></div>
+            <div id="debugKeypad">
+                <div class="debugKeyRow">
+                    <div class="debugKey">L</div>
+                    <div class="debugKey">↑</div>
+                    <div class="debugKey">R</div>
+                </div>
+                <div class="debugKeyRow">
+                    <div class="debugKey">←</div>
+                    <div class="debugKey">↓</div>
+                    <div class="debugKey">→</div>
+                </div>
+            </div>
         </article>
         <article class="" id="question">
             <div class="questionFlex">

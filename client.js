@@ -3,13 +3,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
     var myName = document.getElementById('myName');
     var host = location.origin.replace(/^http/, 'ws');
     var ws = new WebSocket(host);
-    function heartbeat(){
-        ws.send(JSON.stringify({
-            type: 'sendToHost',
-            roomCode: sessionStorage.getItem("room"),
-            data: "heartbeat"
-        }));
-    }
+    window.ws = ws; // lets me use this in other scripts
+    // function heartbeat(){
+    //     ws.send(JSON.stringify({
+    //         type: 'sendToHost',
+    //         roomCode: sessionStorage.getItem("room"),
+    //         data: "heartbeat"
+    //     }));
+    // }
+    window.gameSpecificHandler = (data) => {return true};
     ws.onmessage = (msg) => {
         var data;
         try {
@@ -49,11 +51,19 @@ document.addEventListener('DOMContentLoaded', ()=>{
                         //console.log(xmlHttp.responseText);
                         // manually extract the element div.game using specific comments
                         let header = "<!--START INJECTED HTML-->"
-                        let start = xmlHttp.responseText.search(header) + header.length;
-                        let end = xmlHttp.responseText.search("<!--END INJECTED HTML-->");
+                        let start = xmlHttp.responseText.indexOf(header) + header.length;
+                        let end = xmlHttp.responseText.indexOf("<!--END INJECTED HTML-->");
                         let htmlText = xmlHttp.responseText.substring(start, end);
                         document.body.innerHTML = htmlText;
-                        setInterval(heartbeat, 1000);
+                        // manually extract the element script using specific comments
+                        header = '/** START INJECTED SCRIPT **/';
+                        start = xmlHttp.responseText.indexOf(header) + header.length;
+                        end = xmlHttp.responseText.indexOf("/** END INJECTED SCRIPT **/");
+                        let jsText = xmlHttp.responseText.substring(start, end);
+                        let scriptEl = document.createElement('script');
+                        scriptEl.innerHTML = jsText;
+                        document.head.appendChild(scriptEl);
+                        // setInterval(heartbeat, 1000);
                     }
                 }
                 xmlHttp.open("GET", data.controller, true);
@@ -64,7 +74,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 location.reload();
                 break
             default:
-                console.log('Undefined message type: ' + data.type);
+                if (
+                    window.gameSpecificHandler(data)
+                ) {
+                    console.log('Undefined message type: ' + data.type);
+                }
         }
     };
     
