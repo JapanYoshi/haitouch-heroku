@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>hai!touch Server</title>
+    <title>hai!touch Controller</title>
     <script src="client.js"></script>
     <link rel="stylesheet" href="client.css"/>
 </head>
@@ -20,25 +20,30 @@
             <input style="text-transform: uppercase;" name="rc" id="rc" type="text"
             pattern="[A-Za-z]{4}" maxlength="4" title="4 capital letters.">
             <div id="roomStatus">Room code must be 4 capital letters.</div>
-            <label for="nick">Nickname</label>
+            <label for="nick">Nickname (optional)</label>
             <input style="text-transform: uppercase;" name="nick" id="nick" type="text"
             pattern="[ !',-./0-9?A-Za-z]{0,12}" maxlength="12" title="Up to 12 letters, numbers, and limited symbols: !',-./?">
             <button id="btnJoin">Join room</button>
             <div id="joinStatus"></div>
+            <div id="finePrint">
+                By clicking “Join room”, you agree to our <a href="https://haitouch.ga/tos">Terms of Service</a>.<br>
+                Created by <a href="https://haitouch.ga">hai!touch Studios</a><br>
+                Server hosting by <a href="https://heroku.com">Heroku</a>
+            </div>
         </div>
-        <div id="debug" hidden>
-            <p>This client's name is: <strong id="myName">Connecting</strong></p>
-            <button id="btnGetMyName">Get My Name</button>
-            <p id="output">Log goes here.</p>
-            <h3>Send a message to a specific client</h3>
-            <input id="name" type="text" placeholder="Name"/>
-            <input id="message" type="text" placeholder="Content"/>
-            <button id="btnSendMessage">Send</button>
-            <button id="btnBroadcast">Send to all Clients</button>
-            <button id="btnOpenRoom">Open room</button>
-            <button id="btnSendToRoom">Send to all Clients in the room</button>
-            <button id="btnCloseRoom">Close room</button>
-        </div>
+    </div>
+    <div id="debug" hidden>
+        <p>This client's name is: <strong id="myName">Connecting</strong></p>
+        <button id="btnGetMyName">Get My Name</button>
+        <p id="output">Log goes here.</p>
+        <h3>Send a message to a specific client</h3>
+        <input id="name" type="text" placeholder="Name"/>
+        <input id="message" type="text" placeholder="Content"/>
+        <button id="btnSendMessage">Send</button>
+        <button id="btnBroadcast">Send to all Clients</button>
+        <button id="btnOpenRoom">Open room</button>
+        <button id="btnSendToRoom">Send to all Clients in the room</button>
+        <button id="btnCloseRoom">Close room</button>
     </div>
 </body>
 

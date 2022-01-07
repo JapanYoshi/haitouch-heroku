@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                     );
                     break
                 case 'onError':
-                    output.innerText = data.message;
+                    joinStatus.innerText = data.message;
                     break
                 /* Joining a room */
                 case 'onJoinRoom':
