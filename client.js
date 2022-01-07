@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             roomStatus.innerText = "Room code must be 4 capital letters.";
         }
     }
-    inputRc.addEventListener("input", validateChange);
+    inputRc.addEventListener("input", debounce(validateChange, 125));
     
     /*
      *  If the nickname contains curly Unicode single quotes,
