@@ -23,7 +23,12 @@ app.get("/controller_salty.html", function(req, res){
 app.get("/salty/:resName", function(req, res) {
     // use params to let people fetch any resource in the folder
     res.sendFile(__dirname + "/salty/" + req.params.resName);
-})
+});
+app.get("/img/:resName", function(req, res) {
+    // use params to let people fetch any resource in the folder
+    res.sendFile(__dirname + "/img/" + req.params.resName);
+});
+
 app.use("/client", express.static(__dirname + "/client"));
 
 var port = process.env.PORT || 3001;
@@ -46,6 +51,7 @@ console.log("Server started. Port = " + port);
 // Generating a random short ID. (For some reason there's a library for this)
 var shortid = require('shortid');
 const { send } = require("process");
+const { readlink } = require("fs");
 
 // A dictionary with the key being the assigned ID and the value being the socket.
 let sockets = {};
@@ -202,44 +208,47 @@ wss.on('connection', function(ws) {
                     // OK
                     if (data.roomCode.length != 4) {
                         sendError("Room code must be 4 characters long.");
-                        break;
+                        return;
                     }
                     if (rooms[data.roomCode]) {
                         // room exists
                         let rm = rooms[data.roomCode];
+                        console.log(rm);
                         // is room full?
                         if (rm.status == ROOM_STAT.FULL) {
                             sendError("Room " + data.roomCode + " is full.");
                             break;
                         }
                         // is game in progress?
-                        if (rm.status == ROOM_STAT.INGAME) {
+                        else if (rm.status == ROOM_STAT.INGAME) {
                             sendError("Room " + data.roomCode + " has already started playing.");
                             break;
                         }
                         // is game ended?
-                        if (rm.status == ROOM_STAT.INGAME) {
+                        else if (rm.status == ROOM_STAT.INGAME) {
                             sendError("Room " + data.roomCode + " has already finished playing.");
                             break;
                         }
                         // is user already in?
-                        if (rm.playerNames.includes(name)) {
+                        else if (rm.playerNames.includes(name)) {
                             sendError("You are already in Room " + data.roomCode + ".");
                             break;
                         }
                         // all clear, join.
-                        sockets[rm.host].send(JSON.stringify({
-                            type: 'onPlayerJoin',
-                            name: name,
-                            nick: data.nick
-                        }));
-                        rm.playerNames.push(name);
-                        ws.send(JSON.stringify({
-                            type: 'onJoinRoom',
-                            message: "Joined Room " + data.roomCode + " successfully.",
-                            controller: rm.controller
-                        }) );
-                        console.log(rm);
+                        else {
+                            sockets[rm.host].send(JSON.stringify({
+                                type: 'onPlayerJoin',
+                                name: name,
+                                nick: data.nick
+                            }));
+                            rm.playerNames.push(name);
+                            ws.send(JSON.stringify({
+                                type: 'onJoinRoom',
+                                message: "Joined Room " + data.roomCode + " successfully.",
+                                controller: rm.controller
+                            }) );
+                            console.log("Welcome!");
+                        }
                     } else {
                         // room does not exist
                         sendError("Could not find a room with that room code (" + data.roomCode + ").");
@@ -247,6 +256,30 @@ wss.on('connection', function(ws) {
                 } else {
                     // Not enough data
                     sendError("joinRoom message must contain the following keys: roomCode (string length 4), nick (string length 0 to 12).");
+                }
+                break;
+            case 'editRoom':
+                console.log('received editRoom');
+                // expected keys: roomCode, one of gameName, status
+                if (rooms[data.roomCode]) {
+                    // room exists
+                    if (rooms[data.roomCode].host != name) {
+                        sendError("You are not the host of room " + data.roomCode + ".");
+                    } else {
+                        if ("gameName" in data) {
+                            rooms[data.roomCode].gameName = data.gameName;
+                        } else if ("status" in data) {
+                            if (data.status in ROOM_STAT) {
+                                rooms[data.roomCode].status = ROOM_STAT[data.status];
+                            } else {
+                                sendError("Invalid room status code. Valid ones are:\n" + JSON.stringify(ROOM_STAT, null, 2));
+                            }
+                        } else {
+                            sendError("No valid keys to be edited. Supports editing gameName, status");
+                        }
+                    }
+                } else {
+                    sendError("No such room exists: " + data.roomCode + ".");
                 }
                 break;
             case 'sendToRoom':

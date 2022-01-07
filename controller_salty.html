@@ -1,64 +1,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script>
-        /** START INJECTED SCRIPT **/
-        console.log("ws =", ws);
-        alert("controller loaded");
-        window.gameSpecificHandler = (data) => {
-            console.log("game-specific handling of message type: " + data.type);
-            return false; // no problem
-        }
-        function sendToHost(data) {
-            // roomCode: string length 4
-            // additional data with any keys
-            data.type = 'sendToHost';
-            data.roomCode = sessionStorage.getItem("room");
-            data.from =  localStorage.getItem("name");
-            ws.send(JSON.stringify(data));
-            console.log("sent the following to host:", data);
-        }
-        function sendButton(which, reason) {
-            let data = {
-                action: 'buttonPress',
-                which: which,
-                reason: reason
-            };
-            sendToHost(data)
-        }
-        /* Add event handlers to send input */
-        /* Debug keypad */
-        let debugKeys = document.getElementById('debugKeypad').querySelectorAll('.debugKey');
-        debugKeys.forEach((el, i, parent) => {
-            el.addEventListener('click', () => {
-                el.classList.add('pressed');
-                sendButton(i, 'debug keypad');
-                setTimeout(() => {
-                    el.classList.remove('pressed')
-                }, 50);
-            });
-        })
-        /** END INJECTED SCRIPT **/
-    </script>
+    <link rel="stylesheet" href="client.css"/>
 </head>
 <body>
-<!--Anything that's not between the "START INJECTED HTML" comment and the "END INJECTED HTML" comment won't be used in the app.-->
-
-<!--START INJECTED HTML-->
+    <!--Anything that's not between the "START INJECTED HTML" comment and the "END INJECTED HTML" comment won't be used in the app.-->
+    
+    <!--START INJECTED HTML-->
     <div id="game">
         <style>
             @font-face {
                 font-family: '_Barlow';
+                font-weight: normal;
+                font-style: normal;
                 src: local('Barlow Semi Condensed Medium'), url('salty/400.ttf');
             }
             @font-face {
                 font-family: '_Barlow';
+                font-weight: normal;
                 font-style: italic;
                 src: local('Barlow Semi Condensed Medium Italic'), url('salty/400i.ttf');
             }
             @font-face {
                 font-family: '_Barlow';
                 font-weight: bold;
+                font-style: normal;
                 src: local('Barlow Semi Condensed Extra Bold'), url('salty/700.ttf');
             }
             @font-face {
@@ -80,12 +46,26 @@
                 --col-sorta: #ea9700;
                 --col-kinda: #0087df;
                 --col-both: #7cff6e;
+
+                --white-gradient: linear-gradient(
+                    0deg,
+                    #ebebeb 50%,
+                    #ffffff 100%);
+                --green-gradient: linear-gradient(
+                    0deg,
+                    var(--col-dark-green) 33%,
+                    var(--col-green) 100%);
+                --red-gradient: linear-gradient(
+                    0deg,
+                    var(--col-red) 50%,
+                    var(--col-light-red) 100%);
             }
             html {
                 font-family: '_Barlow', sans-serif;
             }
             body {
                 margin: 0;
+                font-size: 140%;
                 -webkit-touch-callout: none; /* iOS Safari */
                   -webkit-user-select: none; /* Safari */
                    -khtml-user-select: none; /* Konqueror HTML */
@@ -95,11 +75,21 @@
                                                 supported by Chrome, Edge, Opera and Firefox */
             }
             #game {
-                background: black;
                 width: 100vw;
                 height: 100vh;
                 display: flex;
                 flex-direction: column;
+            }
+            .filter {
+                background-image: url("salty/noise.png");
+                background-size: cover;
+                opacity: 0.3;
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                background-blend-mode: multiply;
             }
             header {
                 position: relative;
@@ -112,10 +102,7 @@
                 font-size: 1.5rem;
                 text-align: center;
                 background-color: var(--col-dark-green, green);
-                background: linear-gradient(
-                    0deg,
-                    var(--col-dark-green) 33%,
-                    var(--col-green) 100%);
+                background: var(--green-gradient);
                 color: white;
                 margin: -1rem 0rem 0;
                 padding: 1rem 0rem 0;
@@ -132,21 +119,34 @@
                 display: none;
             }
             .logo {
+                display: none;
                 width: 100%;
                 height: 100%;
                 background-size: contain;
                 background-repeat: no-repeat;
                 background-position: center;
             }
+            .logo.active {
+                display: block;
+            }
+            article#normal.candy .logoCandy {
+                display: block;
+            }
+            article#normal:not(candy) .logoGame {
+                display: block;
+            }
             article#standby {
                 background-color: var(--col-dark-green);
                 background: radial-gradient(circle,
-                    rgba(5,43,20,1) 0%,
-                    rgba(54,92,69,1) 50%,
-                    rgba(82,120,97,1) 100%);
+                    #052b14 0%,
+                    #365c45 50%,
+                    #527861 100%);
             }
-            article#question {
+            article#normal {
                 background-color: var(--col-dark-red);
+            }
+            article#normal.candy {
+                background-color: pink;
             }
             article#sorta {
                 background: var(--col-darkgray);
@@ -157,6 +157,24 @@
             }
             article#gib {
                 background: #26759f;
+            }
+            .skipButton,
+            .startGame {
+                position: absolute;
+                top: 4rem;
+                left: 4rem;
+                right: 4rem;
+                background: var(--red-gradient);
+                color: white;
+                font-size: 1.5rem;
+                padding: 2rem 1rem;
+                text-align: center;
+                border-radius: 0.25rem;
+                display: none;
+            }
+            .skippable .skipButton,
+            .playerOne .startGame {
+                display: block;
             }
             .questionFlex {
                 position: absolute;
@@ -173,10 +191,7 @@
                 padding: 2rem;
                 border-radius: 0.5rem;
                 background-color: white;
-                background: linear-gradient(
-                    0deg,
-                    rgba(235,235,235,1) 50%,
-                    rgba(255,255,255,1) 100%);
+                background: var(--white-gradient);
                 color: black;
                 font-size: 1.25rem;
             }
@@ -200,31 +215,44 @@
                 width: fill;
                 text-align: left;
                 background-color: var(--col-darkgray);
-                color: white;
                 border: 1px solid var(--col-lightgray);
                 border-radius: 0.25rem;
                 margin: 0.5rem;
                 margin-left: 3rem;
                 padding: 1rem;
-            }
-            .oHidden .option {
                 opacity: 0.3;
                 color: transparent;
+            }
+            .buzzIn .option {
+                opacity: 1;
+                color: white;
+            }
+            #normal .option.correct {
+                opacity: 1;
+                background: var(--green-gradient);
+                color: white;
+            }
+            #normal .option.incorrect {
+                opacity: 1;
+                background: var(--red-gradient);
+                color: black;
+            }
+            .pressed {
+                color: black;
+                background: white;
             }
             .btnLifesaver {
                 flex: 0 0 auto;
                 height: 3rem;
                 background-color: white;
-                background: linear-gradient(
-                    0deg,
-                    rgba(235,235,235,1) 50%,
-                    rgba(255,255,255,1) 100%);
+                background: var(--white-gradient);
                 color: black;
                 margin: 1rem;
                 padding: 0.5rem;
                 font-size: 1.25rem;
                 line-height: 2rem;
                 text-align: left;
+                opacity: 0.3;
             }
             .btnLifesaver > img {
                 display: float;
@@ -233,43 +261,49 @@
                 height: 2rem;
                 margin-right: 0.5rem;
             }
-            .oHidden .btnLifesaver {
-                opacity: 0.3;
+            .buzzIn .btnLifesaver {
+                opacity: 1.0;
             }
-            .sorta {
+            .sortBox {
                 flex: 1 0 auto;
                 flex-basis: 0;
                 text-align: center;
                 margin: 1rem;
             }
-            .sortaA, .sortaB, .sortaBoth {
+            .sortA, .sortB, .sortBoth {
                 font-size: 1.5rem;
                 padding: 2rem 1rem;
                 border-radius: 0.25rem;
-                color: black;
+                opacity: 0.3;
+                color: transparent;
             }
-            .sortaBoth {
+            .sortBoth {
                 margin-left: 3rem;
                 margin-right: 3rem;
                 background: var(--col-both);
                 margin-bottom: 1rem;
             }
-            .oHidden .sortaA, .oHidden .sortaB, .oHidden .sortaBoth {
-                opacity: 0.3;
-                color: transparent;
+            .buzzIn .sortA, .buzzIn .sortB, .buzzIn .sortBoth {
+                color: black;
+                opacity: 1;
             }
-            .sortaAB {
+            .sortA.correct, .sortB.correct, .sortBoth.correct {
+                opacity: 1;
+                color: black;
+                background: white;
+            }
+            .sortAB {
                 display: flex;
                 flex-direction: row;
             }
-            .sortaA {
+            .sortA {
                 flex-basis: 0;
                 flex-grow: 1;
                 max-width: 50vw;
                 background: var(--col-sorta);
                 margin-right: 0.5rem;
             }
-            .sortaB {
+            .sortB {
                 flex-basis: 0;
                 flex-grow: 1;
                 max-width: 50vw;
@@ -277,25 +311,33 @@
                 margin-left: 0.5rem;
             }
             #gib input {
+                width: auto;
                 border-radius: 0.25rem;
                 margin: 0 1rem;
                 padding: 1rem;
                 font-size: 1rem;
                 font-family: inherit;
                 border: 0.125rem var(--col-lightgray);
+                text-transform: uppercase;
+            }
+            #gib input:disabled {
+                opacity: 0.3;
+            }
+            #gib input:disabled.correct {
+                text-transform: none;
+                background: var(--green-gradient);
+                color: white;
+                opacity: 1;
             }
             .buzzer {
                 margin: 1rem;
                 border-radius: 0.25rem;
                 padding: 2rem;
-                background: linear-gradient(
-                    0deg,
-                    var(--col-red) 50%,
-                    var(--col-light-red) 100%);
+                background: var(--red-gradient);
                 text-align: center;
                 font-size: 1.5rem;
             }
-            .oHidden .buzzer {
+            .qHidden .buzzer {
                 color: var(--col-dark-red);
                 opacity: 0.3;
             }
@@ -336,15 +378,16 @@
             }
         </style>
         <header>
-            WWWWWWWWWWWW
+            SIGNING UP...
         </header>
         <article class="active" id="standby">
-            <div class="logo logoGame" style="background-image: url('salty/logo_game.png')"></div>
+            <div class="filter"></div>
+            <div class="logo active logoGame" style="background-image: url('salty/logo_game.png')"></div>
             <div class="logo logoLS" style="background-image: url('salty/lifesavers.png')"></div>
             <div class="logo logoRound1" style="background-image: url('salty/round_1.png')"></div>
             <div class="logo logoRound2" style="background-image: url('salty/round_2.png')"></div>
             <div class="logo logoRound3" style="background-image: url('salty/round_3.png')"></div>
-            <div id="debugKeypad">
+            <div id="debugKeypad" style="display: none;">
                 <div class="debugKeyRow">
                     <div class="debugKey">L</div>
                     <div class="debugKey">↑</div>
@@ -356,24 +399,30 @@
                     <div class="debugKey">→</div>
                 </div>
             </div>
+            <div class="startGame">Lights, <s>camera,</s> action!</div>
+            <div class="skipButton">Yeah, we all get it</div>
         </article>
-        <article class="" id="question">
+        <article class="" id="normal">
+            <div class="filter"></div>
+            <div class="logo logoGame" style="background-image: url('salty/logo_game.png')"></div>
+            <div class="logo logoCandy" style="background-image: url('salty/logo_candy.png')"></div>
+            <div class="filter"></div>
             <div class="questionFlex">
                 <div class="question">
                     If you smoked weed that made you feel like a bagel, what would you say?
                 </div>
                 <div class="options">
                     <div class="option">
-                        “Dude, I’m so <strong>baked and fried</strong> right now.”
+                        foo
                     </div>
                     <div class="option">
-                        “Whoa, I’m absolutely <strong>steamed and baked</strong>.”
+                        bar
                     </div>
                     <div class="option">
-                        “Man, I feel totally <strong>boiled and baked</strong>.”
+                        baz
                     </div>
                     <div class="option">
-                        “Holy $#%&, I feel like I’m <strong>baked and boiled</strong>, dude!”
+                        qux
                     </div>
                 </div>
                 <div class="btnLifesaver">
@@ -381,33 +430,355 @@
                 </div>
             </div>
         </article>
-        <article class="" id="sorta">
-            <div class="logo" style="background-image: url('salty/logo_sorta.png')"></div>
+        <article class="" id="sort">
+            <div class="filter"></div>
+            <div class="logo active" style="background-image: url('salty/logo_sorta.png')"></div>
             <div class="questionFlex">
                 <div class="question">
                     quarter-pound beef patty
                 </div>
-                <div class="sorta">
-                    <div class="sortaBoth">both</div>
-                    <div class="sortaAB">
-                        <div class="sortaA">Big Mac®</div>
-                        <div class="sortaB">Whopper®</div>
+                <div class="sortBox">
+                    <div class="sortBoth">both</div>
+                    <div class="sortAB">
+                        <div class="sortA">Big Mac®</div>
+                        <div class="sortB">Whopper®</div>
                     </div>
                 </div>
             </div>
+            <div class="skipButton">Yeah, we all get it</div>
         </article>
         <article class="" id="gib">
-            <div class="logo" style="background-image: url('salty/logo_gib.png')"></div>
+            <div class="filter"></div>
+            <div class="logo active" style="background-image: url('salty/logo_gib.png')"></div>
             <div class="questionFlex">
                 <div class="question">
                     Wow, gourmet wing? Smith Bauer.
                 </div>
-                <input type="text" disabled/>
+                <input type="text" pattern="[ !',-./0-9?A-Za-z]{0,64}" maxlength="64"/>
                 <div class="buzzer">
                     Buzz in!
                 </div>
             </div>
+            <div class="skipButton">Yeah, we all get it</div>
         </article>
     </div>
-    <!--END INJECTED HTML-->
+<!--END INJECTED HTML-->
+<script>
+/** START INJECTED SCRIPT **/
+console.log("ws =", ws);
+var scene = document.querySelector("article#standby");
+/* Change BBcode tags to HTML tags */
+function convertBB(bbcode) {
+    return bbcode
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\[b\]/g, '<strong>')
+        .replace(/\[\/b\]/g, '</strong>')
+        .replace(/\[i\]/g, '<em>')
+        .replace(/\[\/i\]/g, '</em>')
+        .replace(/\[code\]/g, '<code>')
+        .replace(/\[\/code\]/g, '</code>');
+}
+window.gameSpecificHandler = (data) => {
+    if (data.type == "sendToRoom" || data.type == "onMessage") {
+        switch (data.action) {
+            case undefined:
+                return true;
+                break
+            case "changeNick":
+                console.log("game-specific handling of message type " + data.type + ", action " + data.action);
+                // also show the start-game button if the player is player 1
+                document.querySelector('header').innerText = data.nick;
+                if (data.isVip == true) {
+                    document.getElementById("standby").classList.add('playerOne');
+                    document.querySelector('.startGame').addEventListener('click', () => {
+                        document.getElementById("standby").classList.remove('playerOne');
+                        sendButton(5, 'start game');
+                    })
+                }
+                return false;
+                break
+            case "gibYourTurn":
+                console.log("IT'S YOUR TURN TO TYPE");
+                scene.classList.add('yourTurn');
+                scene.querySelector('input').disabled = false;
+                scene.querySelector('input').focus();
+                scene.querySelector('.buzzer').innerText = "Finish typing";
+                break;
+            case "changeScene":
+                switch (data.sceneName) {
+                    case "intro":
+                        document.getElementById("standby").querySelector(".logo.active").classList.remove("active");
+                        document.getElementById("standby").querySelector(".logoRound1").classList.add("active");
+                        break;
+                    case "lifesaver":
+                        document.getElementById("standby").querySelector(".logo.active").classList.remove("active");
+                        document.getElementById("standby").querySelector(".logoLS").classList.add("active");
+                        break;
+                    case "enableBuzzIn":
+                        scene.classList.add("buzzIn");
+                        if (document.querySelector('article#gib.active')) {
+                            scene.classList.remove("qHidden");
+                        }
+                        break;
+                    case "disableBuzzIn":
+                        scene.classList.remove("buzzIn");
+                        break;
+                    case "enableSkip":
+                        scene.classList.add("skippable");
+                        break;
+                    case "disableSkip":
+                        scene.classList.remove("skippable");
+                        break;
+                    case "showQuestion":
+                        scene.classList.remove("qHidden");
+                        break;
+                    case "endQuestion":
+                        scene.classList.remove("active");
+                        scene = document.querySelector("article#standby");
+                        scene.querySelector(".logo.active").classList.remove("active");
+                        scene.querySelector(".logoGame").classList.add("active");
+                        scene.classList.add("active");
+                        break;
+                    case "normal":
+                        scene.classList.remove("active");
+                        scene = document.querySelector("article#normal");
+                        scene.classList.remove("candy");
+                        scene.classList.add("active", "qHidden");
+    
+                        scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
+                        var options = scene.querySelectorAll(".option");
+                        for (let i = 0; i < options.length; i++) {
+                            options[i].innerHTML = convertBB(data.options[i]);
+                            options[i].classList.remove('correct', 'incorrect');
+                        };
+                        
+                        break;
+                    case "candy":
+                        scene.classList.remove("active");
+                        scene = document.querySelector("article#normal");
+                        scene.classList.add("active", "qHidden", "candy");
+    
+                        scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
+                        var options = scene.getElementsByClassName("option");
+                        for (let i = 0; i < options.length; i++) {
+                            options[i].innerHTML = convertBB(data.options[i]);
+                            options[i].classList.remove('correct', 'incorrect');
+                        };
+                        break;
+                    case "sort":
+                        scene.classList.remove("active");
+                        scene = document.querySelector("article#sort");
+                        scene.classList.add("active", "qHidden");
+    
+                        scene.getElementsByClassName('sortA')[0].innerText = data.a
+                        scene.getElementsByClassName('sortB')[0].innerText = data.b
+                        if (data.hasBoth == true) {
+                            scene.getElementsByClassName('sortBoth')[0].style.display = "block";
+                        } else {
+                            scene.getElementsByClassName('sortBoth')[0].style.display = "none";
+                        }
+                        break;
+                    case "sortQuestion":
+                        scene.classList.remove("qHidden");
+                        scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
+                        scene.getElementsByClassName('correct')[0].classList.remove("correct");
+                        break;
+                    case "sortAnswer":
+                        scene.classList.remove("buzzIn");
+                        switch (data.index) {
+                            case 0:
+                                scene.getElementsByClassName('sortA')[0].classList.add("correct");
+                                break;
+                            case 1:
+                                scene.getElementsByClassName('sortB')[0].classList.add("correct");
+                                break;
+                            case 2:
+                                scene.getElementsByClassName('sortBoth')[0].classList.add("correct");
+                                break;
+                        }
+                        break;
+                    case "sortAcc":
+                        scene.getElementsByClassName("question")[0].innerHTML = 
+                            "Your accuracy was " + data.numerator + "/" + data.denominator + ".";
+                        scene.getElementsByClassName('correct')[0].classList.remove("correct");
+                        break;
+                    case "gib":
+                        scene.classList.remove("active");
+                        scene = document.querySelector("article#gib");
+                        scene.classList.add("active", "qHidden");
+    
+                        scene.getElementsByClassName('question')[0].innerText = data.question;
+                        scene.querySelector('input').disabled = true;
+                        scene.getElementsByClassName('buzzer')[0].innerText = "I know this one!";
+                        document.querySelector('#gib .buzzer').style.display = "";
+                        break;
+                    case "correctReveal":
+                        optionWrapper = scene.getElementsByClassName('options')[0];
+                        if (optionWrapper != undefined) {
+                            optionWrapper.getElementsByClassName('option')[data.index].classList.add('correct');
+                            optionWrapper.querySelectorAll('.option:not(.correct)').forEach((e, i) => {e.classList.add('incorrect')});
+                        }
+                        break;
+                    case "wrongReveal":
+                        optionWrapper = scene.getElementsByClassName('options')[0];
+                        if (optionWrapper != undefined) {
+                            optionWrapper.getElementsByClassName('option')[data.index].classList.add('incorrect');
+                        } else {
+                            // will i actually use this or nah
+                        }
+                        break;
+                    case "gibReveal":
+                        scene.classList.remove('buzzIn');
+                        //scene.classList.add('qHidden');
+                        scene.querySelector('input').classList.add('correct');
+                        scene.querySelector('input').value = data.answer;
+                        scene.querySelector('input').disabled = true;
+                        break;
+                    default:
+                        console.error('sceneName is unrecognized: ' + data.sceneName);
+                        return true;
+                }
+                break;
+            default:
+                return true; // undefined
+        }
+        return false; // no problem
+    }
+    return true;
+}
+function sendToHost(data) {
+    // roomCode: string length 4
+    // additional data with any keys
+    data.type = 'sendToHost';
+    data.roomCode = sessionStorage.getItem("room");
+    data.from =  localStorage.getItem("name");
+    ws.send(JSON.stringify(data));
+    console.log("sent the following to host:", data);
+}
+function sendButton(which, reason) {
+    let data = {
+        action: 'buttonPress',
+        which: which,
+        reason: reason
+    };
+    sendToHost(data)
+}
+/* Add event handlers to send input */
+/* Debug keypad */
+let debugKeys = document.getElementById('debugKeypad').querySelectorAll('.debugKey');
+debugKeys.forEach((el, i, parent) => {
+    el.addEventListener('click', () => {
+        el.classList.add('pressed');
+        sendButton(i, 'debug keypad');
+        setTimeout(() => {
+            el.classList.remove('pressed')
+        }, 50);
+    });
+});
+/* Skip buttons */
+let skipButtons = document.querySelectorAll('.skipButton');
+skipButtons.forEach((el, i, parent) => {
+    el.addEventListener('click', () => {
+        sendButton(5, 'skip');
+    })
+})
+
+/* Option buttons */
+let normalOptions = document.querySelectorAll('#normal .option');
+normalOptions.forEach((el, i, parent) => {
+    el.addEventListener('click', () => {
+        if (document.getElementById("normal").classList.contains('buzzIn')) {
+            document.getElementById("normal").classList.remove('buzzIn');
+            el.classList.add('pressed');
+            sendButton([1, 3, 5, 4][i], 'answer normal question');
+            setTimeout(() => {
+                el.classList.remove('pressed')
+            }, 50);
+        }
+    });
+})
+document.querySelector('#normal .btnLifesaver').addEventListener(
+    'click', () => {
+        if (document.getElementById("normal").classList.contains('buzzIn')) {
+            document.getElementById("normal").classList.remove('buzzIn');
+            sendButton(0, 'lifesaver normal question');
+            document.querySelector('#normal .btnLifesaver').style.display = "none";
+        }
+    }
+)
+document.querySelector('#sort .sortA').addEventListener(
+    'click', () => {
+        if (document.getElementById("sort").classList.contains('buzzIn')) {
+            document.getElementById("sort").classList.remove('buzzIn');
+            document.querySelector('#sort .sortA').classList.add('pressed');
+            sendButton(3, 'sort question');
+            setTimeout(() => {
+                document.querySelector('#sort .sortA').classList.remove('pressed')
+            }, 50);
+        }
+    }
+)
+document.querySelector('#sort .sortB').addEventListener(
+    'click', () => {
+        if (document.getElementById("sort").classList.contains('buzzIn')) {
+            document.getElementById("sort").classList.remove('buzzIn');
+            document.querySelector('#sort .sortB').classList.add('pressed');
+            sendButton(5, 'sort question');
+            setTimeout(() => {
+                document.querySelector('#sort .sortB').classList.remove('pressed')
+            }, 50);
+        }
+    }
+)
+document.querySelector('#sort .sortBoth').addEventListener(
+    'click', () => {
+        if (document.getElementById("sort").classList.contains('buzzIn')) {
+            document.getElementById("sort").classList.remove('buzzIn');
+            document.querySelector('#sort .sortBoth').classList.add('pressed');
+            sendButton(1, 'sort question');
+            setTimeout(() => {
+                document.querySelector('#sort .sortBoth').classList.remove('pressed')
+            }, 50);
+        }
+    }
+)
+document.querySelector('#gib .buzzer').addEventListener(
+    'click', () => {
+        if (document.getElementById("gib").classList.contains('buzzIn')) {
+            sendButton(5, 'all outta salt buzz in');
+        } else if (document.getElementById('gib').classList.contains('yourTurn')) {
+            updateText(true);
+            document.querySelector('#gib .buzzer').style.display = "none";
+        }
+    }
+)
+
+const updateText = (finalize) => {
+    console.log("Updating text content");
+    sendToHost({
+        action: 'updateText',
+        message: document.querySelector('#gib input').value,
+        finalize: !!finalize
+    });
+}
+
+const sendTextContent = debounce(
+    updateText, 125, false
+);
+
+document.querySelector('#gib input').addEventListener(
+    'input', () => {
+        console.log("Text changed")
+        sendTextContent();
+    }
+);
+
+sendToHost({
+    'action': 'requestNick'
+});
+
+/** END INJECTED SCRIPT **/
+</script>
+
 </body>

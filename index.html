@@ -11,29 +11,34 @@
 </head>
 
 <body>
-    <h1>hai!touch Controller</h1>
-    <div id="join">
-        <label for="rc">Room code</label>
-        <input style="text-transform: uppercase;" name="rc" id="rc" type="text"
-        pattern="[A-Za-z]{4}" maxlength="4" title="4 capital letters.">
-        <label for="nick">Nickname</label>
-        <input style="text-transform: uppercase;" name="nick" id="nick" type="text"
-        pattern="[ !',-./0-9?A-Za-z]{0,12}" maxlength="12" title="Up to 12 letters, numbers, and limited symbols: !',-./?">
-        <button id="btnJoin">Join room</button>
-        <div id="joinStatus"></div>
-    </div>
-    <div id="debug">
-        <p>This client's name is: <strong id="myName">Connecting</strong></p>
-        <button id="btnGetMyName">Get My Name</button>
-        <p id="output">Log goes here.</p>
-        <h3>Send a message to a specific client</h3>
-        <input id="name" type="text" placeholder="Name"/>
-        <input id="message" type="text" placeholder="Content"/>
-        <button id="btnSendMessage">Send</button>
-        <button id="btnBroadcast">Send to all Clients</button>
-        <button id="btnOpenRoom">Open room</button>
-        <button id="btnSendToRoom">Send to all Clients in the room</button>
-        <button id="btnCloseRoom">Close room</button>
+    <header>
+        <img id="logo" src="img/haitouch_logo_wide.svg">
+    </header>
+    <div id="main">
+        <div id="join">
+            <label for="rc">Room code</label>
+            <input style="text-transform: uppercase;" name="rc" id="rc" type="text"
+            pattern="[A-Za-z]{4}" maxlength="4" title="4 capital letters.">
+            <div id="roomStatus">Room code must be 4 capital letters.</div>
+            <label for="nick">Nickname</label>
+            <input style="text-transform: uppercase;" name="nick" id="nick" type="text"
+            pattern="[ !',-./0-9?A-Za-z]{0,12}" maxlength="12" title="Up to 12 letters, numbers, and limited symbols: !',-./?">
+            <button id="btnJoin">Join room</button>
+            <div id="joinStatus"></div>
+        </div>
+        <div id="debug" hidden>
+            <p>This client's name is: <strong id="myName">Connecting</strong></p>
+            <button id="btnGetMyName">Get My Name</button>
+            <p id="output">Log goes here.</p>
+            <h3>Send a message to a specific client</h3>
+            <input id="name" type="text" placeholder="Name"/>
+            <input id="message" type="text" placeholder="Content"/>
+            <button id="btnSendMessage">Send</button>
+            <button id="btnBroadcast">Send to all Clients</button>
+            <button id="btnOpenRoom">Open room</button>
+            <button id="btnSendToRoom">Send to all Clients in the room</button>
+            <button id="btnCloseRoom">Close room</button>
+        </div>
     </div>
 </body>
 
