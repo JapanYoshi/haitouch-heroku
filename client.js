@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', ()=>{
+    function roomClosedModal(message) {
+        document.getElementById('roomClosedBg').hidden = false;
+        document.getElementById('roomClosedMessage').innerHTML = message;
+    }
     var output = document.getElementById('output');
     var roomStatus = document.getElementById('roomStatus');
     var myName = document.getElementById('myName');
@@ -59,7 +63,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
                             let start = xmlHttp.responseText.indexOf(header) + header.length;
                             let end = xmlHttp.responseText.indexOf("<!--END INJECTED HTML-->");
                             let htmlText = xmlHttp.responseText.substring(start, end);
+                            let disconnectedModal = document.getElementById("roomClosedBg");
                             document.body.innerHTML = htmlText;
+                            document.body.appendChild(disconnectedModal);
                             // manually extract the element script using specific comments
                             header = '/** START INJECTED SCRIPT **/';
                             start = xmlHttp.responseText.indexOf(header) + header.length;
@@ -83,8 +89,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                     roomStatus.innerText = "Couldn’t find room " + inputRc.value.toUpperCase() + ".";
                     break
                 case 'onRoomClosed':
-                    alert("Room closed.");
-                    location.reload();
+                    roomClosedModal("Room closed.");
                     break
                 default:
                     console.log('Undefined message type: ' + data.type);
@@ -109,14 +114,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
     
     ws.onclose = (event => {
         myName.innerText = "Disconnected";
-        alert("Room closed.");
-        location.reload();
+        roomClosedModal("Disconnected from the server.");
+        return;
     });
     
     ws.onerror = (event => {
         myName.innerText = "Error";
-        alert("Room closed.");
-        location.reload();
+        roomClosedModal("A connection error occurred.");
+        return;
     });
     
     function getMyName() {
@@ -256,6 +261,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     
 
     console.log("client.js event function just ran.")
+    document.getElementById("roomClosedBg").hidden = true;
 });
 console.log("client.js document just ran.")
 

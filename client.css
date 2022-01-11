@@ -15,6 +15,62 @@ html {
     color: #fff;
 }
 
+#roomClosedBg {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.75);
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 19950912; /* ydkj vol 1 reference */
+}
+
+#roomClosedModal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--purple);
+    border: 0.125rem solid var(--purple2);
+    border-radius: 1rem; 
+    width: 16rem;
+    height: 16rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+#roomClosedModal button {
+    margin-bottom: 0;
+}
+
+#handBox {
+    width: 100%;
+    flex-basis: 0;
+    flex-grow: 1;
+    position: relative;
+}
+
+#handImage {
+    position: absolute;
+    left: 2rem;
+    top: 0rem;
+    width: 10rem;
+    height: 10rem;
+    background-image: url("img/bye.svg");
+    background-size: cover;
+    animation: handWave 250ms ease-in-out alternate infinite;
+}
+
+@keyframes handWave {
+    from {
+        transform: translate(-1.0rem, -0.0rem) rotate(-15deg);
+    }
+    to {
+        transform: translate(1.0rem, -0.5rem) rotate(15deg);
+    }
+}
+
 input {
     font-family: inherit;
     font-size: inherit;

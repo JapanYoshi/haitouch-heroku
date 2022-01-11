@@ -71,6 +71,9 @@ wss.on('connection', function(ws) {
             return
         }
         switch (data.type) {
+            case 'heartbeat':
+                // do nothing
+                break;
             case 'hello':
                 // msg.name has last used name
                 console.log(Object.keys(sockets), data.name, Object.keys(sockets).includes(data.name));

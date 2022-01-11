@@ -118,15 +118,18 @@
                 display: none;
             }
             .logo {
-                display: none;
-                width: 100%;
-                height: 100%;
+                opacity: 0;
+                position: absolute;
+                left: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
                 background-size: contain;
                 background-repeat: no-repeat;
                 background-position: center;
             }
             .logo.active {
-                display: block;
+                opacity: 1;
             }
             article#normal.candy .logoCandy {
                 display: block;
@@ -226,12 +229,14 @@
                 opacity: 1;
                 color: white;
             }
-            #normal .option.correct {
+            #normal .option.correct,
+            #thousand .option.correct {
                 opacity: 1;
                 background: var(--green-gradient);
                 color: white;
             }
-            #normal .option.incorrect {
+            #normal .option.incorrect,
+            #thousand .option.incorrect {
                 opacity: 1;
                 background: var(--red-gradient);
                 color: black;
@@ -398,7 +403,7 @@
                     <div class="debugKey">→</div>
                 </div>
             </div>
-            <div class="startGame">Lights, <s>camera,</s> action!</div>
+            <div class="startGame">Start</div>
             <div class="skipButton">Yeah, we all get it</div>
         </article>
         <article class="" id="normal">
@@ -408,20 +413,20 @@
             <div class="filter"></div>
             <div class="questionFlex">
                 <div class="question">
-                    If you smoked weed that made you feel like a bagel, what would you say?
+                    Q
                 </div>
                 <div class="options">
                     <div class="option">
-                        foo
+                        1
                     </div>
                     <div class="option">
-                        bar
+                        2
                     </div>
                     <div class="option">
-                        baz
+                        3
                     </div>
                     <div class="option">
-                        qux
+                        4
                     </div>
                 </div>
                 <div class="btnLifesaver">
@@ -456,6 +461,31 @@
                 <input type="text" pattern="[ !',-./0-9?A-Za-z]{0,64}" maxlength="64"/>
                 <div class="buzzer">
                     Buzz in!
+                </div>
+            </div>
+            <div class="skipButton">Yeah, we all get it</div>
+        </article>
+        <article class="" id="thousand">
+            <div class="filter"></div>
+            <div class="logo active" style="background-image: url('salty/logo_thousand.png')"></div>
+            <div class="filter"></div>
+            <div class="questionFlex">
+                <div class="question">
+                    Question
+                </div>
+                <div class="options">
+                    <div class="option">
+                        1
+                    </div>
+                    <div class="option">
+                        2
+                    </div>
+                    <div class="option">
+                        3
+                    </div>
+                    <div class="option">
+                        4
+                    </div>
                 </div>
             </div>
             <div class="skipButton">Yeah, we all get it</div>
@@ -617,6 +647,9 @@ window.gameSpecificHandler = (data) => {
                         if (optionWrapper != undefined) {
                             optionWrapper.getElementsByClassName('option')[data.index].classList.add('correct');
                             optionWrapper.querySelectorAll('.option:not(.correct)').forEach((e, i) => {e.classList.add('incorrect')});
+                        } else {
+                            // will i actually use this or nah
+                            console.log("could not find optionWrapper");
                         }
                         break;
                     case "wrongReveal":
@@ -625,6 +658,7 @@ window.gameSpecificHandler = (data) => {
                             optionWrapper.getElementsByClassName('option')[data.index].classList.add('incorrect');
                         } else {
                             // will i actually use this or nah
+                            console.log("could not find optionWrapper");
                         }
                         break;
                     case "gibReveal":
@@ -633,6 +667,18 @@ window.gameSpecificHandler = (data) => {
                         scene.querySelector('input').classList.add('correct');
                         scene.querySelector('input').value = data.answer;
                         scene.querySelector('input').disabled = true;
+                        break;
+                    case "thousand":
+                        scene.classList.remove("active");
+                        scene = document.querySelector("article#thousand");
+                        scene.classList.add("active", "qHidden");
+                        
+                        scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
+                        var options = scene.querySelectorAll(".option");
+                        for (let i = 0; i < options.length; i++) {
+                            options[i].innerHTML = convertBB(data.options[i]);
+                            options[i].classList.remove('correct', 'incorrect');
+                        };
                         break;
                     default:
                         console.error('sceneName is unrecognized: ' + data.sceneName);
@@ -684,16 +730,17 @@ skipButtons.forEach((el, i, parent) => {
 })
 
 /* Option buttons */
-let normalOptions = document.querySelectorAll('#normal .option');
-normalOptions.forEach((el, i, parent) => {
+let options = document.querySelectorAll('#normal .option, #thousand .option');
+options.forEach((el, i) => {
     el.addEventListener('click', () => {
-        if (document.getElementById("normal").classList.contains('buzzIn')) {
-            document.getElementById("normal").classList.remove('buzzIn');
+        if (scene.classList.contains('buzzIn') && !(el.classList.contains('incorrect'))) {
+            scene.classList.remove('buzzIn');
             el.classList.add('pressed');
-            sendButton([1, 3, 5, 4][i], 'answer normal question');
+            sendButton([1, 3, 5, 4][i % 4], 'answer normal question');
             setTimeout(() => {
                 el.classList.remove('pressed')
             }, 50);
+            console.log("Pressed option " + (i % 4 + 1))
         }
     });
 })
