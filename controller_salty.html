@@ -97,6 +97,7 @@
       .filter {
         background-image: url("salty/noise.png");
         background-size: cover;
+        background-position: center;
         opacity: 0.3;
         position: absolute;
         top: 0;
@@ -363,6 +364,7 @@
         line-height: 2rem;
         text-align: left;
         opacity: 0.3;
+        font-style: italic;
       }
 
       .btnLifesaver>img {
@@ -391,6 +393,7 @@
         padding: 2rem 1rem;
         border-radius: 0.25rem;
         opacity: 0.3;
+        font-weight: bold;
         color: transparent;
       }
 
@@ -482,10 +485,11 @@
       }
 
       .clue {
-        margin-top: 0.5rem;
+        margin-top: 1rem;
         color: white;
         font-weight: bold;
         text-align: center;
+        font-size: 1.5rem;
       }
 
       #rush .question {
@@ -857,7 +861,7 @@
             );
             
             // also show the start-game button if the player is player 1
-            if (data.playerIndex == 0) {
+            if (data.isVip) {
               document.getElementById("standby").classList.add('playerOne');
               document.querySelector('.startGame').addEventListener('click', () => {
                 document.getElementById("standby").classList.remove('playerOne');
@@ -950,7 +954,9 @@
               case "sortQuestion":
                 scene.classList.remove("qHidden");
                 scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
-                scene.getElementsByClassName('correct')[0].classList.remove("correct");
+                if (scene.getElementsByClassName('correct')) {
+                  scene.getElementsByClassName('correct')[0].classList.remove("correct");
+                }
                 break;
               case "sortAnswer":
                 scene.classList.remove("buzzIn");
@@ -1075,14 +1081,7 @@
                 if (data.result < 0) {
                   document.getElementById("finalResult").classList.add('negative');
                 }
-                let ord = (
-                  data.placement == 1 ? "1st":
-                  data.placement == 2 ? "2nd":
-                  data.placement == 3 ? "3rd": (data.placement + "th")
-                )
-                document.getElementById("finalPlacement").innerText = (
-                  data.tied ? `You tied for ${ord}!` : `You placed ${ord}!`
-                );
+                document.getElementById("finalPlacement").innerText = data.comment;
                 setTimeout(() => {scene.classList.add('result')}, 5000);
                 break;
               default:
@@ -1237,7 +1236,8 @@
 
     document.querySelector('#gib input').addEventListener(
       'input', () => {
-        console.log("Text changed")
+        console.log("Text changed");
+        fixQuotes(document.querySelector('#gib input'));
         sendTextContent();
       }
     );

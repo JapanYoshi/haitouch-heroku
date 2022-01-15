@@ -65,7 +65,7 @@ wss.on('connection', function(ws) {
         var data;
         try {
             data = JSON.parse(msg);
-            console.log(`WebSocket message received: `, data);
+            //console.log(`WebSocket message received: `, data);
         } catch (e) {
             console.log(`Invalid JSON: ${msg.data}`);
             return

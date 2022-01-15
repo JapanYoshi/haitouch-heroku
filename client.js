@@ -190,16 +190,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
      *  If the nickname contains curly Unicode single quotes,
      *  replace them with the allowed typewriter/ASCII single quotes.
      */
-    function fixQuotes() {
+    window.fixQuotes = (el) => {
         // replace unicode single quotes
-        var start = inputNick.selectionStart;
-        var end = inputNick.selectionEnd;
+        var start = el.selectionStart;
+        var end = el.selectionEnd;
         const quotes = /[\u2018-\u201b]/g
-        inputNick.value = inputNick.value.replaceAll(quotes, "'");
-        inputNick.setSelectionRange(start, end);
+        el.value = el.value.replaceAll(quotes, "'");
+        el.setSelectionRange(start, end);
     }
-    inputNick.addEventListener("input", fixQuotes);
-    fixQuotes()
+    inputNick.addEventListener("input", ()=>{window.fixQuotes(inputNick)});
+    window.fixQuotes(inputNick)
     inputNick.addEventListener('keypress', (e) => {
         if (e.key == "Enter") {
             document.getElementById('btnJoin').click();
