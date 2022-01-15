@@ -371,11 +371,13 @@ wss.on('connection', function(ws) {
                 found = true
                 console.log("Found the room. Room code is " + k);
                 v.playerNames.forEach((e) => {
-                    sockets[e].send(JSON.stringify({
-                        type: 'onRoomClosed',
-                        message: ""
-                    }) );
-                    console.log("Notified " + e + " that the room is closed.");
+                    if (sockets[e]) {
+                        sockets[e].send(JSON.stringify({
+                            type: 'onRoomClosed',
+                            message: ""
+                        }) );
+                        console.log("Notified " + e + " that the room is closed.");
+                    }
                 });
                 ws.send(JSON.stringify({
                     type: "onRoomClose",
