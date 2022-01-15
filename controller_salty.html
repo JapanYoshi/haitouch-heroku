@@ -1,504 +1,830 @@
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="client.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="client.css" />
 </head>
+
 <body>
-    <!--Anything that's not between the "START INJECTED HTML" comment and the "END INJECTED HTML" comment won't be used in the app.-->
-    
-    <!--START INJECTED HTML-->
-    <div id="game">
-        <style>
-            @font-face {
-                font-family: '_Barlow';
-                font-weight: normal;
-                font-style: normal;
-                src: local('Barlow Semi Condensed Medium'), url('salty/400.ttf');
-            }
-            @font-face {
-                font-family: '_Barlow';
-                font-weight: normal;
-                font-style: italic;
-                src: local('Barlow Semi Condensed Medium Italic'), url('salty/400i.ttf');
-            }
-            @font-face {
-                font-family: '_Barlow';
-                font-weight: bold;
-                font-style: normal;
-                src: local('Barlow Semi Condensed Extra Bold'), url('salty/700.ttf');
-            }
-            @font-face {
-                font-family: '_Barlow';
-                font-weight: bold;
-                font-style: italic;
-                src: local('Barlow Semi Condensed Extra Bold Italic'), url('salty/700i.ttf');
-            }
-            :root {
-                --col-light-green: #13b65e;
-                --col-green: #00c870;
-                --col-dark-green: #0b852e;
-                --col-light-red: #f878a3;
-                --col-red: #d3205b;
-                --col-dark-red: #53102a;
-                --col-lightgray: #999999;
-                --col-darkgray: #3b3943;
-    
-                --col-sorta: #ea9700;
-                --col-kinda: #0087df;
-                --col-both: #7cff6e;
+  <!--Anything that's not between the "START INJECTED HTML" comment and the "END INJECTED HTML" comment won't be used in the app.-->
 
-                --white-gradient: linear-gradient(
-                    0deg,
-                    #ebebeb 50%,
-                    #ffffff 100%);
-                --green-gradient: linear-gradient(
-                    0deg,
-                    var(--col-dark-green) 33%,
-                    var(--col-green) 100%);
-                --red-gradient: linear-gradient(
-                    0deg,
-                    var(--col-red) 50%,
-                    var(--col-light-red) 100%);
-            }
-            html {
-                font-family: '_Barlow', sans-serif;
-            }
-            body {
-                margin: 0;
-                -webkit-touch-callout: none; /* iOS Safari */
-                  -webkit-user-select: none; /* Safari */
-                   -khtml-user-select: none; /* Konqueror HTML */
-                     -moz-user-select: none; /* Old versions of Firefox */
-                      -ms-user-select: none; /* Internet Explorer/Edge */
-                          user-select: none; /* Non-prefixed version, currently
+  <!--START INJECTED HTML-->
+  <div id="game">
+    <style>
+      @font-face {
+        font-family: '_Barlow';
+        font-weight: normal;
+        font-style: normal;
+        src: local('Barlow Semi Condensed Medium'), url('salty/400.ttf');
+      }
+
+      @font-face {
+        font-family: '_Barlow';
+        font-weight: normal;
+        font-style: italic;
+        src: local('Barlow Semi Condensed Medium Italic'), url('salty/400i.ttf');
+      }
+
+      @font-face {
+        font-family: '_Barlow';
+        font-weight: bold;
+        font-style: normal;
+        src: local('Barlow Semi Condensed Extra Bold'), url('salty/700.ttf');
+      }
+
+      @font-face {
+        font-family: '_Barlow';
+        font-weight: bold;
+        font-style: italic;
+        src: local('Barlow Semi Condensed Extra Bold Italic'), url('salty/700i.ttf');
+      }
+
+      :root {
+        --col-light-green: #13b65e;
+        --col-green: #00c870;
+        --col-dark-green: #0b852e;
+        --col-light-red: #f878a3;
+        --col-red: #d3205b;
+        --col-dark-red: #53102a;
+        --col-lightgray: #999999;
+        --col-darkgray: #3b3943;
+
+        --col-sorta: #ea9700;
+        --col-kinda: #0087df;
+        --col-both: #7cff6e;
+
+        --col-rush-off: #5d7697;
+        --col-rush-on: #67eff6;
+
+        --white-gradient: linear-gradient(0deg,
+            #ebebeb 50%,
+            #ffffff 100%);
+        --green-gradient: linear-gradient(0deg,
+            var(--col-dark-green) 33%,
+            var(--col-green) 100%);
+        --red-gradient: linear-gradient(0deg,
+            var(--col-red) 50%,
+            var(--col-light-red) 100%);
+      }
+
+      html {
+        font-family: '_Barlow', sans-serif;
+      }
+
+      body {
+        margin: 0;
+        -webkit-touch-callout: none;
+        /* iOS Safari */
+        -webkit-user-select: none;
+        /* Safari */
+        -khtml-user-select: none;
+        /* Konqueror HTML */
+        -moz-user-select: none;
+        /* Old versions of Firefox */
+        -ms-user-select: none;
+        /* Internet Explorer/Edge */
+        user-select: none;
+        /* Non-prefixed version, currently
                                                 supported by Chrome, Edge, Opera and Firefox */
-            }
-            #game {
-                width: 100vw;
-                height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }
-            .filter {
-                background-image: url("salty/noise.png");
-                background-size: cover;
-                opacity: 0.3;
-                position: fixed;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                right: 0;
-                background-blend-mode: multiply;
-            }
-            header {
-                position: relative;
-                z-index: 64;
-                flex-grow: 0;
-                flex-shrink: 0;
-                width: 100%;
-                height: 3rem;
-                line-height: 3rem;
-                font-size: 1.5rem;
-                text-align: center;
-                background-color: var(--col-dark-green, green);
-                background: var(--green-gradient);
-                color: white;
-                margin: -1rem 0rem 0;
-                padding: 1rem 0rem 0;
-                box-shadow: 0 0 0.25rem black;
-            }
-            article {
-                position: relative;
-                display: block;
-                flex: auto;
-                min-height: 0;
-                overflow: hidden;
-            }
-            article:not(.active) {
-                display: none;
-            }
-            .logo {
-                opacity: 0;
-                position: absolute;
-                left: 0;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: center;
-            }
-            .logo.active {
-                opacity: 1;
-            }
-            article#normal.candy .logoCandy {
-                display: block;
-            }
-            article#normal:not(candy) .logoGame {
-                display: block;
-            }
-            article#standby {
-                background-color: var(--col-dark-green);
-                background: radial-gradient(circle,
-                    #052b14 0%,
-                    #365c45 50%,
-                    #527861 100%);
-            }
-            article#normal {
-                background-color: var(--col-dark-red);
-            }
-            article#normal.candy {
-                background-color: pink;
-            }
-            article#sorta {
-                background: var(--col-darkgray);
-                background: radial-gradient(circle,
-                    black 0%,
-                    var(--col-darkgray) 50%,
-                    var(--col-lightgray) 100%);
-            }
-            article#gib {
-                background: #26759f;
-            }
-            .skipButton,
-            .startGame {
-                position: absolute;
-                top: 4rem;
-                left: 4rem;
-                right: 4rem;
-                background: var(--red-gradient);
-                color: white;
-                font-size: 1.5rem;
-                padding: 2rem 1rem;
-                text-align: center;
-                border-radius: 0.25rem;
-                display: none;
-            }
-            .skippable .skipButton,
-            .playerOne .startGame {
-                display: block;
-            }
-            .questionFlex {
-                position: absolute;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0;
-                display: flex;
-                flex-direction: column;
-            }
-            .question {
-                flex: 0 0 auto;
-                margin: 1rem;
-                padding: 2rem;
-                border-radius: 0.5rem;
-                background-color: white;
-                background: var(--white-gradient);
-                color: black;
-                font-size: 1rem;
-            }
-            .qHidden .question {
-                opacity: 0.3;
-                color: transparent;
-            }
-            button {
-                font-family: inherit;
-                font-size: inherit;
-            }
-            .options {
-                flex: 1 0 auto;
-                overflow-x: hidden;
-                min-height: 0;
-                flex-basis: 0;
-                overflow-y: scroll;
-            }
-            .option {
-                display: block;
-                width: fill;
-                text-align: left;
-                background-color: var(--col-darkgray);
-                border: 1px solid var(--col-lightgray);
-                border-radius: 0.25rem;
-                margin: 0.5rem;
-                margin-left: 3rem;
-                padding: 1rem;
-                opacity: 0.3;
-                color: transparent;
-            }
-            .buzzIn .option {
-                opacity: 1;
-                color: white;
-            }
-            #normal .option.correct,
-            #thousand .option.correct {
-                opacity: 1;
-                background: var(--green-gradient);
-                color: white;
-            }
-            #normal .option.incorrect,
-            #thousand .option.incorrect {
-                opacity: 1;
-                background: var(--red-gradient);
-                color: black;
-            }
-            .pressed {
-                color: black;
-                background: white;
-            }
-            .btnLifesaver {
-                flex: 0 0 auto;
-                height: 3rem;
-                background-color: white;
-                background: var(--white-gradient);
-                color: black;
-                margin: 1rem;
-                padding: 0.5rem;
-                font-size: 1rem;
-                line-height: 2rem;
-                text-align: left;
-                opacity: 0.3;
-            }
-            .btnLifesaver > img {
-                display: float;
-                float: left;
-                width: 2rem;
-                height: 2rem;
-                margin-right: 0.5rem;
-            }
-            .buzzIn .btnLifesaver {
-                opacity: 1.0;
-            }
-            .sortBox {
-                flex: 1 0 auto;
-                flex-basis: 0;
-                text-align: center;
-                margin: 1rem;
-            }
-            .sortA, .sortB, .sortBoth {
-                font-size: 1.5rem;
-                padding: 2rem 1rem;
-                border-radius: 0.25rem;
-                opacity: 0.3;
-                color: transparent;
-            }
-            .sortBoth {
-                margin-left: 3rem;
-                margin-right: 3rem;
-                background: var(--col-both);
-                margin-bottom: 1rem;
-            }
-            .buzzIn .sortA, .buzzIn .sortB, .buzzIn .sortBoth {
-                color: black;
-                opacity: 1;
-            }
-            .sortA.correct, .sortB.correct, .sortBoth.correct {
-                opacity: 1;
-                color: black;
-                background: white;
-            }
-            .sortAB {
-                display: flex;
-                flex-direction: row;
-            }
-            .sortA {
-                flex-basis: 0;
-                flex-grow: 1;
-                max-width: 50vw;
-                background: var(--col-sorta);
-                margin-right: 0.5rem;
-            }
-            .sortB {
-                flex-basis: 0;
-                flex-grow: 1;
-                max-width: 50vw;
-                background: var(--col-kinda);
-                margin-left: 0.5rem;
-            }
-            #gib input {
-                width: auto;
-                border-radius: 0.25rem;
-                margin: 0 1rem;
-                padding: 1rem;
-                font-size: 1rem;
-                font-family: inherit;
-                border: 0.125rem var(--col-lightgray);
-                text-transform: uppercase;
-            }
-            #gib input:disabled {
-                opacity: 0.3;
-            }
-            #gib input:disabled.correct {
-                text-transform: none;
-                background: var(--green-gradient);
-                color: white;
-                opacity: 1;
-            }
-            .buzzer {
-                margin: 1rem;
-                border-radius: 0.25rem;
-                padding: 2rem;
-                background: var(--red-gradient);
-                text-align: center;
-                font-size: 1.5rem;
-            }
-            .qHidden .buzzer {
-                color: var(--col-dark-red);
-                opacity: 0.3;
-            }
+      }
 
-            #debugKeypad {
-                position: absolute;
-                left: 0;
-                right: 0;
-                top: 0;
-                bottom: 0;
-                display: flex;
-                flex-flow: column;
-                justify-content: center;
-                align-items: center;
-            }
+      #game {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-            #debugKeypad .debugRow {
-                width: 100vw;
-            }
+      .filter {
+        background-image: url("salty/noise.png");
+        background-size: cover;
+        opacity: 0.3;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background-blend-mode: multiply;
+      }
 
-            #debugKeypad .debugKey {
-                display: inline-block;
-                background: var(--col-dark-red);
-                color: white;
-                width: 30vw;
-                max-width: 5rem;
-                height: 5rem;
-                border-radius: 0.25rem;
-                text-align: center;
-                font-size: 3rem;
-                line-height: 3rem;
-                margin: 0.5rem 0;
-                padding: 2rem;
-            }
+      header {
+        position: relative;
+        z-index: 64;
+        flex-grow: 0;
+        flex-shrink: 0;
+        width: 100%;
+        height: 3rem;
+        line-height: 3rem;
+        font-size: 1.5rem;
+        text-align: center;
+        background-color: var(--col-dark-green, green);
+        background: var(--green-gradient);
+        color: white;
+        margin: -1rem 0rem 0;
+        padding: 1rem 0rem 0;
+        box-shadow: 0 0 0.25rem black;
+      }
 
-            #debugKeypad .debugKey.pressed {
-                background: var(--col-light-red);
-            }
-        </style>
-        <header>
-            SIGNING UP...
-        </header>
-        <article class="active" id="standby">
-            <div class="filter"></div>
-            <div class="logo active logoGame" style="background-image: url('salty/logo_game.png')"></div>
-            <div class="logo logoLS" style="background-image: url('salty/lifesavers.png')"></div>
-            <div class="logo logoRound1" style="background-image: url('salty/round_1.png')"></div>
-            <div class="logo logoRound2" style="background-image: url('salty/round_2.png')"></div>
-            <div class="logo logoRound3" style="background-image: url('salty/round_3.png')"></div>
-            <div id="debugKeypad" style="display: none;">
-                <div class="debugKeyRow">
-                    <div class="debugKey">L</div>
-                    <div class="debugKey">↑</div>
-                    <div class="debugKey">R</div>
-                </div>
-                <div class="debugKeyRow">
-                    <div class="debugKey">←</div>
-                    <div class="debugKey">↓</div>
-                    <div class="debugKey">→</div>
-                </div>
-            </div>
-            <div class="startGame">Start</div>
-            <div class="skipButton">Yeah, we all get it</div>
-        </article>
-        <article class="" id="normal">
-            <div class="filter"></div>
-            <div class="logo logoGame" style="background-image: url('salty/logo_game.png')"></div>
-            <div class="logo logoCandy" style="background-image: url('salty/logo_candy.png')"></div>
-            <div class="filter"></div>
-            <div class="questionFlex">
-                <div class="question">
-                    Q
-                </div>
-                <div class="options">
-                    <div class="option">
-                        1
-                    </div>
-                    <div class="option">
-                        2
-                    </div>
-                    <div class="option">
-                        3
-                    </div>
-                    <div class="option">
-                        4
-                    </div>
-                </div>
-                <div class="btnLifesaver">
-                    <img src="salty/lifesaver.png"> Use a Lifesaver (eliminate 2 choices)
-                </div>
-            </div>
-        </article>
-        <article class="" id="sort">
-            <div class="filter"></div>
-            <div class="logo active" style="background-image: url('salty/logo_sorta.png')"></div>
-            <div class="questionFlex">
-                <div class="question">
-                    quarter-pound beef patty
-                </div>
-                <div class="sortBox">
-                    <div class="sortBoth">both</div>
-                    <div class="sortAB">
-                        <div class="sortA">Big Mac®</div>
-                        <div class="sortB">Whopper®</div>
-                    </div>
-                </div>
-            </div>
-            <div class="skipButton">Yeah, we all get it</div>
-        </article>
-        <article class="" id="gib">
-            <div class="filter"></div>
-            <div class="logo active" style="background-image: url('salty/logo_gib.png')"></div>
-            <div class="questionFlex">
-                <div class="question">
-                    Wow, gourmet wing? Smith Bauer.
-                </div>
-                <input type="text" pattern="[ !',-./0-9?A-Za-z]{0,64}" maxlength="64"/>
-                <div class="buzzer">
-                    Buzz in!
-                </div>
-            </div>
-            <div class="skipButton">Yeah, we all get it</div>
-        </article>
-        <article class="" id="thousand">
-            <div class="filter"></div>
-            <div class="logo active" style="background-image: url('salty/logo_thousand.png')"></div>
-            <div class="filter"></div>
-            <div class="questionFlex">
-                <div class="question">
-                    Question
-                </div>
-                <div class="options">
-                    <div class="option">
-                        1
-                    </div>
-                    <div class="option">
-                        2
-                    </div>
-                    <div class="option">
-                        3
-                    </div>
-                    <div class="option">
-                        4
-                    </div>
-                </div>
-            </div>
-            <div class="skipButton">Yeah, we all get it</div>
-        </article>
-    </div>
-<!--END INJECTED HTML-->
-<script>
-/** START INJECTED SCRIPT **/
-console.log("ws =", ws);
-var scene = document.querySelector("article#standby");
-/* Change BBcode tags to HTML tags */
-function convertBB(bbcode) {
-    return bbcode
+      #playerNumber {
+        display: inline-block;
+        background-image: url("salty/player_number.svg");
+        width: 3rem;
+        height: calc(3rem * 4 / 3);
+        margin-right: -2rem;
+        background-size: 500% 200%;
+        background-origin: padding-box;
+        background-position-x: left 0%;
+        background-position-y: top 0%;
+        vertical-align: top;
+        transform: rotate(7deg) translate(-2rem, 0.5rem);
+      }
+
+      article {
+        position: relative;
+        display: block;
+        flex-grow: 0;
+        flex-shrink: 1;
+        flex-basis: 100vh;
+        min-height: 0;
+        overflow: hidden;
+        transition: flex-basis 150ms ease-out;
+      }
+
+      article:not(.active) {
+        flex-basis: 0vh;
+      }
+
+      .logo {
+        opacity: 0;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+
+      .logo.active {
+        opacity: 1;
+      }
+
+      #rush_bg {
+        opacity: 0.5;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 9999rem;
+        height: 9999rem;
+        max-width: 110vmax;
+        max-height: 110vmax;
+        transform: translate(-50%, -50%);
+        animation: rotate-slowly 60s infinite linear;
+        mix-blend-mode: overlay;
+      }
+      
+      article#rush.reveal #rush_bg {
+        opacity: 0;
+      }
+
+      @keyframes rotate-slowly {
+        from {
+          transform: translate(-50%, -50%) rotate(0deg);
+        } to {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+
+      article#normal.candy .logoCandy {
+        display: block;
+      }
+
+      article#normal:not(candy) .logoGame {
+        display: block;
+      }
+
+      article#standby {
+        background-color: var(--col-dark-green);
+        background: radial-gradient(circle,
+            #052b14 0%,
+            #365c45 50%,
+            #527861 100%);
+      }
+
+      article#normal {
+        background-color: var(--col-dark-red);
+      }
+
+      article#normal.candy {
+        background-color: pink;
+      }
+
+      article#sorta {
+        background: var(--col-darkgray);
+        background: radial-gradient(circle,
+            black 0%,
+            var(--col-darkgray) 50%,
+            var(--col-lightgray) 100%);
+      }
+
+      article#gib {
+        background: #26759f;
+      }
+
+      article#rush {
+        background-color: #112f54;
+        background: radial-gradient(circle,
+            #153867 0%,
+            #112f56 50%,
+            #050c17 100%);
+      }
+
+      article#rush.reveal {
+        background: white;
+      }
+
+      .skipButton,
+      .startGame {
+        position: absolute;
+        top: 4rem;
+        left: 4rem;
+        right: 4rem;
+        background: var(--red-gradient);
+        color: white;
+        font-size: 1.5rem;
+        padding: 2rem 1rem;
+        text-align: center;
+        border-radius: 0.25rem;
+        display: none;
+      }
+
+      .skippable .skipButton,
+      .playerOne .startGame {
+        display: block;
+      }
+
+      .questionFlex {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .question {
+        flex: 0 0 auto;
+        margin: 1rem 1rem 0;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        background-color: white;
+        background: var(--white-gradient);
+        color: black;
+        font-size: 1rem;
+      }
+
+      .qHidden .question {
+        opacity: 0.3;
+        color: transparent;
+      }
+
+      button {
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      .options {
+        flex: 1 0 auto;
+        overflow-x: hidden;
+        min-height: 0;
+        flex-basis: 0;
+        overflow-y: scroll;
+      }
+      
+      @media screen and (min-width: 720px) {
+        #rush .options {
+          display: flex;
+          flex-wrap: wrap;
+        }
+        
+        #rush .optionRush {
+          flex-basis: 34%;
+          flex-grow: 1;
+          flex-shrink: 0;
+          margin: 0.5rem;
+        }
+      }
+
+      .option {
+        display: block;
+        width: fill;
+        text-align: left;
+        background-color: var(--col-darkgray);
+        border: 1px solid var(--col-lightgray);
+        border-radius: 0.25rem;
+        margin: 0.5rem;
+        margin-left: 3rem;
+        padding: 1rem;
+        opacity: 0.3;
+        color: transparent;
+        transform: scale(100%, 100%);
+        transition: transform 150ms ease-out;
+      }
+
+      .buzzIn .option {
+        opacity: 1;
+        color: white;
+      }
+
+      #normal .option.correct,
+      #thousand .option.correct {
+        opacity: 1;
+        background: var(--green-gradient);
+        color: white;
+      }
+
+      #normal .option.incorrect,
+      #thousand .option.incorrect {
+        opacity: 1;
+        background: var(--red-gradient);
+        color: black;
+      }
+
+      .btnLifesaver {
+        flex: 0 0 auto;
+        height: 3rem;
+        background-color: white;
+        background: var(--white-gradient);
+        color: black;
+        margin: 1rem;
+        padding: 0.5rem;
+        font-size: 1rem;
+        line-height: 2rem;
+        text-align: left;
+        opacity: 0.3;
+      }
+
+      .btnLifesaver>img {
+        display: float;
+        float: left;
+        width: 2rem;
+        height: 2rem;
+        margin-right: 0.5rem;
+      }
+
+      .buzzIn .btnLifesaver {
+        opacity: 1.0;
+      }
+
+      .sortBox {
+        flex: 1 0 auto;
+        flex-basis: 0;
+        text-align: center;
+        margin: 1rem;
+      }
+
+      .sortA,
+      .sortB,
+      .sortBoth {
+        font-size: 1.5rem;
+        padding: 2rem 1rem;
+        border-radius: 0.25rem;
+        opacity: 0.3;
+        color: transparent;
+      }
+
+      .sortBoth {
+        margin-left: 3rem;
+        margin-right: 3rem;
+        background: var(--col-both);
+        margin-bottom: 1rem;
+      }
+
+      .buzzIn .sortA,
+      .buzzIn .sortB,
+      .buzzIn .sortBoth {
+        color: black;
+        opacity: 1;
+      }
+
+      .sortA.correct,
+      .sortB.correct,
+      .sortBoth.correct {
+        opacity: 1;
+        color: black;
+        background: white;
+      }
+
+      .sortAB {
+        display: flex;
+        flex-direction: row;
+      }
+
+      .sortA {
+        flex-basis: 0;
+        flex-grow: 1;
+        max-width: 50vw;
+        background: var(--col-sorta);
+        margin-right: 0.5rem;
+      }
+
+      .sortB {
+        flex-basis: 0;
+        flex-grow: 1;
+        max-width: 50vw;
+        background: var(--col-kinda);
+        margin-left: 0.5rem;
+      }
+
+      #gib input {
+        width: auto;
+        border-radius: 0.25rem;
+        margin: 0 1rem;
+        padding: 1rem;
+        font-size: 1rem;
+        font-family: inherit;
+        border: 0.125rem var(--col-lightgray);
+        text-transform: uppercase;
+      }
+
+      #gib input:disabled {
+        opacity: 0.3;
+      }
+
+      #gib input:disabled.correct {
+        text-transform: none;
+        background: var(--green-gradient);
+        color: white;
+        opacity: 1;
+      }
+
+      #gibClues {
+        margin: 0.5rem 1rem;
+      }
+      
+      .gibOption {
+        margin: 0.25rem 0;
+      }
+
+      .buzzer {
+        margin: 1rem;
+        border-radius: 0.25rem;
+        padding: 2rem;
+        background: var(--red-gradient);
+        text-align: center;
+        font-size: 1.5rem;
+      }
+
+      .qHidden .buzzer {
+        color: var(--col-dark-red);
+        opacity: 0.3;
+      }
+
+      .clue {
+        margin-top: 0.5rem;
+        color: white;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      #rush .question {
+        background: black;
+        color: white;
+        font-size: 1.5rem;
+      }
+
+      #rush.qHidden .question {
+        display: none;
+      }
+
+      #rush.qHidden .optionRush {
+        display: none;
+      }
+
+      .checkRush {
+        display: none;
+      }
+
+      .optionRush {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: fill;
+        text-align: left;
+        border: 1px solid var(--col-white);
+        border-radius: 0.25rem;
+        margin: 0.5rem;
+        margin-left: 3rem;
+        padding: 1rem;
+        color: transparent;
+        opacity: 0.3;
+        background: black;
+        transform: scale(100%, 100%);
+        transition: transform 150ms ease-out;
+      }
+      .optionRush.selectable,
+      .optionRush.false,
+      .optionRush.true {
+        opacity: 1;
+      }
+      .optionRush > span {
+        display: block;
+        flex-grow: 1;
+        flex-shrink: 1;
+      }
+      .checkRush:not(:checked) + .optionRush.selectable {
+        background: var(--col-rush-off);
+        color: white;
+      }
+      .checkRush:checked + .optionRush.selectable {
+        background: var(--col-rush-on);
+        color: darkblue;
+      }
+      .optionRush::before {
+        display: block;
+        flex-grow: 0;
+        flex-shrink: 0;
+        width: 3rem;
+        height: 3rem;
+        margin: -0.5rem;
+        margin-right: 0.5rem;
+        color: transparent;
+        background-size: contain;
+        font-size: 0;
+      }
+      .checkRush:not(:checked) + .optionRush::before,
+      .optionRush.false::before {
+        content: "No: ";
+        background-image: url("salty/rush_false.png")
+      }
+      .checkRush:checked + .optionRush::before,
+      .optionRush.true::before {
+        content: "Yes: ";
+        background-image: url("salty/rush_true.png")
+      }
+      .option.pressed,
+      .checkRush + .optionRush.selectable.pressed {
+        transform: scale(0.9);
+        color: black;
+        background: white;
+        transition: transform 10ms ease-out;
+      }
+      .checkRush:not(:checked) + .optionRush.false,
+      .checkRush:checked       + .optionRush.true {
+        background: var(--green-gradient);
+        color: white;
+      }
+      .checkRush:not(:checked) + .optionRush.true,
+      .checkRush:checked       + .optionRush.false {
+        background: var(--red-gradient);
+        color: black;
+      }
+
+      #finalResult {
+        display: none;
+      }
+
+      .result #finalResult {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 16rem;
+        max-width: 100%;
+        height: 6rem;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        background: var(--green-gradient);
+        padding: 1rem;
+        border-radius: 1rem;
+        box-shadow: 0rem 0.5rem 2rem black;
+      }
+
+      #finalResult.negative {
+        background: var(--red-gradient)
+      }
+
+      #finalHeader {
+        font-weight: bold;
+        text-transform: uppercase;
+        opacity: 0.85;
+        letter-spacing: 0.25rem;
+      }
+      
+      #finalScore {
+        font-size: 2rem;
+        font-weight: bold;
+      }
+      
+      #finalPlacement {
+        font-size: 1.5rem;
+        color: white;
+      }
+
+      #debugKeypad {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #debugKeypad .debugRow {
+        width: 100vw;
+      }
+
+      #debugKeypad .debugKey {
+        display: inline-block;
+        background: var(--col-dark-red);
+        color: white;
+        width: 30vw;
+        max-width: 5rem;
+        height: 5rem;
+        border-radius: 0.25rem;
+        text-align: center;
+        font-size: 3rem;
+        line-height: 3rem;
+        margin: 0.5rem 0;
+        padding: 2rem;
+      }
+
+      #debugKeypad .debugKey.pressed {
+        background: var(--col-light-red);
+      }
+    </style>
+    <header>
+      <div id="playerNumber"></div>
+      <span id="nickname">SIGNING UP...</span>
+    </header>
+    <article class="active" id="standby">
+      <div class="filter"></div>
+      <div class="logo active logoGame" style="background-image: url('salty/logo_game.png')"></div>
+      <div class="logo logoLS" style="background-image: url('salty/lifesavers.png')"></div>
+      <div class="logo logoRound1" style="background-image: url('salty/round_1.png')"></div>
+      <div class="logo logoRound2" style="background-image: url('salty/round_2.png')"></div>
+      <div class="logo logoRound3" style="background-image: url('salty/round_3.png')"></div>
+      <div id="finalResult">
+        <div id="finalHeader">Results</div>
+        <div id="finalScore">$1,000,000</div>
+        <div id="finalPlacement">You tied for 1st!</div>
+      </div>
+      <div id="debugKeypad" style="display: none;">
+        <div class="debugKeyRow">
+          <div class="debugKey">L</div>
+          <div class="debugKey">↑</div>
+          <div class="debugKey">R</div>
+        </div>
+        <div class="debugKeyRow">
+          <div class="debugKey">←</div>
+          <div class="debugKey">↓</div>
+          <div class="debugKey">→</div>
+        </div>
+      </div>
+      <div class="startGame">Start</div>
+      <div class="skipButton">Yeah, we all get it</div>
+    </article>
+    <article class="" id="normal">
+      <div class="filter"></div>
+      <div class="logo logoGame" style="background-image: url('salty/logo_game.png')"></div>
+      <div class="logo logoCandy" style="background-image: url('salty/logo_candy.png')"></div>
+      <div class="filter"></div>
+      <div class="questionFlex">
+        <div class="question">
+          Q
+        </div>
+        <div class="options">
+          <div class="option">
+            1
+          </div>
+          <div class="option">
+            2
+          </div>
+          <div class="option">
+            3
+          </div>
+          <div class="option">
+            4
+          </div>
+        </div>
+        <div class="btnLifesaver">
+          <img src="salty/lifesaver.png"> Use a Lifesaver (eliminate 2 choices)
+        </div>
+      </div>
+    </article>
+    <article class="" id="sort">
+      <div class="filter"></div>
+      <div class="logo active" style="background-image: url('salty/logo_sorta.png')"></div>
+      <div class="questionFlex">
+        <div class="question">
+          quarter-pound beef patty
+        </div>
+        <div class="sortBox">
+          <div class="sortBoth">both</div>
+          <div class="sortAB">
+            <div class="sortA">Big Mac®</div>
+            <div class="sortB">Whopper®</div>
+          </div>
+        </div>
+      </div>
+      <div class="skipButton">Yeah, we all get it</div>
+    </article>
+    <article class="" id="gib">
+      <div class="filter"></div>
+      <div class="logo active" style="background-image: url('salty/logo_gib.png')"></div>
+      <div class="questionFlex">
+        <div class="question">
+          Question
+        </div>
+        <div id="gibClues">
+          <div class="gibClue">
+            Wait for Clue 1...
+          </div>
+          <div class="gibClue">
+            Wait for Clue 2...
+          </div>
+          <div class="gibClue">
+            Wait for Clue 3...
+          </div>
+        </div>
+        <input type="text" pattern="[ !',-./0-9?A-Za-z]{0,64}" maxlength="64" />
+        <div class="buzzer"></div>
+      </div>
+      <div class="skipButton">Yeah, we all get it</div>
+    </article>
+    <article class="" id="thousand">
+      <div class="filter"></div>
+      <div class="logo active" style="background-image: url('salty/logo_thousand.png')"></div>
+      <div class="filter"></div>
+      <div class="questionFlex">
+        <div class="question">
+          Question
+        </div>
+        <div class="options">
+          <div class="option">
+            1
+          </div>
+          <div class="option">
+            2
+          </div>
+          <div class="option">
+            3
+          </div>
+          <div class="option">
+            4
+          </div>
+        </div>
+      </div>
+      <div class="skipButton">Yeah, we all get it</div>
+    </article>
+    <article class="" id="rush">
+      <img id="rush_bg" src="salty/rush.png">
+      <div class="questionFlex">
+        <div class="clue">Clue</div>
+        <div class="question">Section</div>
+        <div class="options">
+          <input type="checkbox" id="rush0" class="checkRush">
+          <label for="rush0" class="optionRush">
+            <span>1</span>
+          </label>
+          <input type="checkbox" id="rush1" class="checkRush">
+          <label for="rush1" class="optionRush">
+            <span>2</span>
+          </label>
+          <input type="checkbox" id="rush2" class="checkRush">
+          <label for="rush2" class="optionRush">
+            <span>3</span>
+          </label>
+          <input type="checkbox" id="rush3" class="checkRush">
+          <label for="rush3" class="optionRush">
+            <span>4</span>
+          </label>
+          <input type="checkbox" id="rush4" class="checkRush">
+          <label for="rush4" class="optionRush">
+            <span>5</span>
+          </label>
+          <input type="checkbox" id="rush5" class="checkRush">
+          <label for="rush5" class="optionRush">
+            <span>6</span>
+          </label>
+        </div>
+      </div>
+      <div class="skipButton">Let’s do this.</div>
+    </article>
+  </div>
+  <!--END INJECTED HTML-->
+  <script>
+    /** START INJECTED SCRIPT **/
+    console.log("ws =", ws);
+    var scene = document.querySelector("article#standby");
+    /* Change BBcode tags to HTML tags */
+    function convertBB(bbcode) {
+      return bbcode
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/\[b\]/g, '<strong>')
@@ -507,324 +833,420 @@ function convertBB(bbcode) {
         .replace(/\[\/i\]/g, '</em>')
         .replace(/\[code\]/g, '<code>')
         .replace(/\[\/code\]/g, '</code>');
-}
-window.gameSpecificHandler = (data) => {
-    if (data.type == "sendToRoom" || data.type == "onMessage") {
+    }
+    window.gameSpecificHandler = (data) => {
+      if (data.type == "sendToRoom" || data.type == "onMessage") {
         switch (data.action) {
-            case undefined:
+          case undefined:
+            return true;
+            break
+          case "changeNick":
+            console.log("game-specific handling of message type " + data.type + ", action " + data.action);
+            document.getElementById('nickname').innerText = data.nick;
+            // set player number at the top of the screen
+            document.getElementById('playerNumber').style.backgroundPositionX = (
+              25 * (
+                data.playerIndex < 4 ?
+                data.playerIndex + 1 :
+                data.playerIndex - 4
+              ) + '%'
+            );
+            document.getElementById('playerNumber').style.backgroundPositionY = (
+              data.playerIndex < 4 ?
+                '0%' : '50%'
+            );
+            
+            // also show the start-game button if the player is player 1
+            if (data.playerIndex == 0) {
+              document.getElementById("standby").classList.add('playerOne');
+              document.querySelector('.startGame').addEventListener('click', () => {
+                document.getElementById("standby").classList.remove('playerOne');
+                sendButton(5, 'start game');
+              })
+            }
+            return false;
+            break
+          case "gibYourTurn":
+            console.log("IT'S YOUR TURN TO TYPE");
+            scene.classList.add('yourTurn');
+            scene.querySelector('input').disabled = false;
+            scene.querySelector('input').focus();
+            scene.querySelector('.buzzer').innerText = "Finish typing";
+            break;
+          case "changeScene":
+            switch (data.sceneName) {
+              case "intro":
+                document.getElementById("standby").querySelector(".logo.active").classList.remove("active");
+                document.getElementById("standby").querySelector(".logoRound1").classList.add("active");
+                break;
+              case "lifesaver":
+                document.getElementById("standby").querySelector(".logo.active").classList.remove("active");
+                document.getElementById("standby").querySelector(".logoLS").classList.add("active");
+                break;
+              case "enableBuzzIn":
+                scene.classList.add("buzzIn");
+                if (document.querySelector('article#gib.active')) {
+                  scene.classList.remove("qHidden");
+                }
+                break;
+              case "disableBuzzIn":
+                scene.classList.remove("buzzIn");
+                break;
+              case "enableSkip":
+                scene.classList.add("skippable");
+                break;
+              case "disableSkip":
+                scene.classList.remove("skippable");
+                break;
+              case "showQuestion":
+                scene.classList.remove("qHidden");
+                break;
+              case "endQuestion":
+                scene.classList.remove("active");
+                scene = document.querySelector("article#standby");
+                scene.querySelector(".logo.active").classList.remove("active");
+                scene.querySelector(".logoGame").classList.add("active");
+                scene.classList.add("active");
+                break;
+              case "normal":
+                scene.classList.remove("active");
+                scene = document.querySelector("article#normal");
+                scene.classList.remove("candy");
+                scene.classList.add("active", "qHidden");
+
+                scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
+                var options = scene.querySelectorAll(".option");
+                for (let i = 0; i < options.length; i++) {
+                  options[i].innerHTML = convertBB(data.options[i]);
+                  options[i].classList.remove('correct', 'incorrect');
+                };
+
+                break;
+              case "candy":
+                scene.classList.remove("active");
+                scene = document.querySelector("article#normal");
+                scene.classList.add("active", "qHidden", "candy");
+
+                scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
+                var options = scene.getElementsByClassName("option");
+                for (let i = 0; i < options.length; i++) {
+                  options[i].innerHTML = convertBB(data.options[i]);
+                  options[i].classList.remove('correct', 'incorrect');
+                };
+                break;
+              case "sort":
+                scene.classList.remove("active");
+                scene = document.querySelector("article#sort");
+                scene.classList.add("active", "qHidden");
+
+                scene.getElementsByClassName('sortA')[0].innerText = data.a
+                scene.getElementsByClassName('sortB')[0].innerText = data.b
+                if (data.hasBoth == true) {
+                  scene.getElementsByClassName('sortBoth')[0].style.display = "block";
+                } else {
+                  scene.getElementsByClassName('sortBoth')[0].style.display = "none";
+                }
+                break;
+              case "sortQuestion":
+                scene.classList.remove("qHidden");
+                scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
+                scene.getElementsByClassName('correct')[0].classList.remove("correct");
+                break;
+              case "sortAnswer":
+                scene.classList.remove("buzzIn");
+                switch (data.index) {
+                  case 0:
+                    scene.getElementsByClassName('sortA')[0].classList.add("correct");
+                    break;
+                  case 1:
+                    scene.getElementsByClassName('sortB')[0].classList.add("correct");
+                    break;
+                  case 2:
+                    scene.getElementsByClassName('sortBoth')[0].classList.add("correct");
+                    break;
+                }
+                break;
+              case "sortAcc":
+                scene.getElementsByClassName("question")[0].innerHTML =
+                  "Your accuracy was " + data.numerator + "/" + data.denominator + ".";
+                scene.getElementsByClassName('correct')[0].classList.remove("correct");
+                break;
+              case "gib":
+                scene.classList.remove("active");
+                scene = document.querySelector("article#gib");
+                scene.classList.add("active", "qHidden");
+
+                scene.getElementsByClassName('question')[0].innerText = data.question;
+                scene.querySelector('input').disabled = true;
+                scene.getElementsByClassName('buzzer')[0].innerText = "I know this one!";
+                document.querySelector('#gib .buzzer').style.display = "";
+                break;
+              case "gibClue":
+                scene.querySelectorAll('.gibClue')[data.i].innerHTML = convertBB(data.t);
+                break;
+              case "correctReveal":
+                optionWrapper = scene.getElementsByClassName('options')[0];
+                if (optionWrapper != undefined) {
+                  optionWrapper.getElementsByClassName('option')[data.index].classList.add('correct');
+                  optionWrapper.querySelectorAll('.option:not(.correct)').forEach((e, i) => { e.classList.add('incorrect') });
+                } else {
+                  // will i actually use this or nah
+                  console.log("could not find optionWrapper");
+                }
+                break;
+              case "wrongReveal":
+                optionWrapper = scene.getElementsByClassName('options')[0];
+                if (optionWrapper != undefined) {
+                  optionWrapper.getElementsByClassName('option')[data.index].classList.add('incorrect');
+                } else {
+                  // will i actually use this or nah
+                  console.log("could not find optionWrapper");
+                }
+                break;
+              case "gibReveal":
+                scene.classList.remove('buzzIn');
+                //scene.classList.add('qHidden');
+                scene.querySelector('input').classList.add('correct');
+                scene.querySelector('input').value = data.answer;
+                scene.querySelector('input').disabled = true;
+                break;
+              case "thousand":
+                scene.classList.remove("active");
+                scene = document.querySelector("article#thousand");
+                scene.classList.add("active", "qHidden");
+
+                scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
+                var options = scene.querySelectorAll(".option");
+                for (let i = 0; i < options.length; i++) {
+                  options[i].innerHTML = convertBB(data.options[i]);
+                  options[i].classList.remove('correct', 'incorrect');
+                };
+                break;
+              case "rush":
+                scene.classList.remove("active");
+                scene = document.querySelector("article#rush");
+                scene.classList.add("active", "qHidden");
+                scene.querySelector('.clue').style.display = "none";
+                break;
+              case "rushClue":
+                scene.querySelector('.clue').innerHTML = convertBB(data.clue);
+                scene.querySelector('.clue').style.display = "block";
+                break;
+              case "rushSection":
+                scene.classList.remove('qHidden', 'reveal');
+                scene.querySelector('.question').innerHTML = convertBB(data.question);
+                var options = scene.querySelectorAll(".optionRush");
+                var ticks = scene.querySelectorAll("input[type=checkbox]");
+                for (let i = 0; i < options.length; i++) {
+                  options[i].innerHTML = "<span>"+convertBB(data.options[i])+"</span>";
+                  options[i].classList.remove('true', 'false');
+                  ticks[i].checked = false;
+                  ticks[i].disabled = true;
+                }
+                options[0].classList.add('selectable');
+                ticks[0].disabled = false;
+                for (let i = 1; i < 6; i++) {
+                  setTimeout(
+                    () => {
+                      options[i].classList.add('selectable');
+                      ticks[i].disabled = false;
+                    },
+                    (i * 2 - (i % 2)) * 15000.0/16.0
+                  );
+                }
+              break;
+              case "rushReveal":
+                scene.classList.add('reveal');
+                var options = scene.querySelectorAll(".optionRush");
+                var ticks = scene.querySelectorAll("input[type=checkbox]");
+                for (let i = 0; i < options.length; i++) {
+                  options[i].classList.remove('selectable');
+                  options[i].classList.add(
+                    data.answers[i] ? 'true': 'false'
+                  );
+                };
+                break;
+              case "finalResult":
+                console.log("LMAO YEET finalResult", data);
+                scene.classList.remove("active");
+                scene = document.getElementById("standby");
+                scene.classList.add("active");
+                document.getElementById("finalScore").innerText = data.resultAsText;
+                if (data.result < 0) {
+                  document.getElementById("finalResult").classList.add('negative');
+                }
+                let ord = (
+                  data.placement == 1 ? "1st":
+                  data.placement == 2 ? "2nd":
+                  data.placement == 3 ? "3rd": (data.placement + "th")
+                )
+                document.getElementById("finalPlacement").innerText = (
+                  data.tied ? `You tied for ${ord}!` : `You placed ${ord}!`
+                );
+                setTimeout(() => {scene.classList.add('result')}, 5000);
+                break;
+              default:
+                console.error('sceneName is unrecognized: ' + data.sceneName);
                 return true;
-                break
-            case "changeNick":
-                console.log("game-specific handling of message type " + data.type + ", action " + data.action);
-                // also show the start-game button if the player is player 1
-                document.querySelector('header').innerText = data.nick;
-                if (data.isVip == true) {
-                    document.getElementById("standby").classList.add('playerOne');
-                    document.querySelector('.startGame').addEventListener('click', () => {
-                        document.getElementById("standby").classList.remove('playerOne');
-                        sendButton(5, 'start game');
-                    })
-                }
-                return false;
-                break
-            case "gibYourTurn":
-                console.log("IT'S YOUR TURN TO TYPE");
-                scene.classList.add('yourTurn');
-                scene.querySelector('input').disabled = false;
-                scene.querySelector('input').focus();
-                scene.querySelector('.buzzer').innerText = "Finish typing";
-                break;
-            case "changeScene":
-                switch (data.sceneName) {
-                    case "intro":
-                        document.getElementById("standby").querySelector(".logo.active").classList.remove("active");
-                        document.getElementById("standby").querySelector(".logoRound1").classList.add("active");
-                        break;
-                    case "lifesaver":
-                        document.getElementById("standby").querySelector(".logo.active").classList.remove("active");
-                        document.getElementById("standby").querySelector(".logoLS").classList.add("active");
-                        break;
-                    case "enableBuzzIn":
-                        scene.classList.add("buzzIn");
-                        if (document.querySelector('article#gib.active')) {
-                            scene.classList.remove("qHidden");
-                        }
-                        break;
-                    case "disableBuzzIn":
-                        scene.classList.remove("buzzIn");
-                        break;
-                    case "enableSkip":
-                        scene.classList.add("skippable");
-                        break;
-                    case "disableSkip":
-                        scene.classList.remove("skippable");
-                        break;
-                    case "showQuestion":
-                        scene.classList.remove("qHidden");
-                        break;
-                    case "endQuestion":
-                        scene.classList.remove("active");
-                        scene = document.querySelector("article#standby");
-                        scene.querySelector(".logo.active").classList.remove("active");
-                        scene.querySelector(".logoGame").classList.add("active");
-                        scene.classList.add("active");
-                        break;
-                    case "normal":
-                        scene.classList.remove("active");
-                        scene = document.querySelector("article#normal");
-                        scene.classList.remove("candy");
-                        scene.classList.add("active", "qHidden");
-    
-                        scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
-                        var options = scene.querySelectorAll(".option");
-                        for (let i = 0; i < options.length; i++) {
-                            options[i].innerHTML = convertBB(data.options[i]);
-                            options[i].classList.remove('correct', 'incorrect');
-                        };
-                        
-                        break;
-                    case "candy":
-                        scene.classList.remove("active");
-                        scene = document.querySelector("article#normal");
-                        scene.classList.add("active", "qHidden", "candy");
-    
-                        scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
-                        var options = scene.getElementsByClassName("option");
-                        for (let i = 0; i < options.length; i++) {
-                            options[i].innerHTML = convertBB(data.options[i]);
-                            options[i].classList.remove('correct', 'incorrect');
-                        };
-                        break;
-                    case "sort":
-                        scene.classList.remove("active");
-                        scene = document.querySelector("article#sort");
-                        scene.classList.add("active", "qHidden");
-    
-                        scene.getElementsByClassName('sortA')[0].innerText = data.a
-                        scene.getElementsByClassName('sortB')[0].innerText = data.b
-                        if (data.hasBoth == true) {
-                            scene.getElementsByClassName('sortBoth')[0].style.display = "block";
-                        } else {
-                            scene.getElementsByClassName('sortBoth')[0].style.display = "none";
-                        }
-                        break;
-                    case "sortQuestion":
-                        scene.classList.remove("qHidden");
-                        scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
-                        scene.getElementsByClassName('correct')[0].classList.remove("correct");
-                        break;
-                    case "sortAnswer":
-                        scene.classList.remove("buzzIn");
-                        switch (data.index) {
-                            case 0:
-                                scene.getElementsByClassName('sortA')[0].classList.add("correct");
-                                break;
-                            case 1:
-                                scene.getElementsByClassName('sortB')[0].classList.add("correct");
-                                break;
-                            case 2:
-                                scene.getElementsByClassName('sortBoth')[0].classList.add("correct");
-                                break;
-                        }
-                        break;
-                    case "sortAcc":
-                        scene.getElementsByClassName("question")[0].innerHTML = 
-                            "Your accuracy was " + data.numerator + "/" + data.denominator + ".";
-                        scene.getElementsByClassName('correct')[0].classList.remove("correct");
-                        break;
-                    case "gib":
-                        scene.classList.remove("active");
-                        scene = document.querySelector("article#gib");
-                        scene.classList.add("active", "qHidden");
-    
-                        scene.getElementsByClassName('question')[0].innerText = data.question;
-                        scene.querySelector('input').disabled = true;
-                        scene.getElementsByClassName('buzzer')[0].innerText = "I know this one!";
-                        document.querySelector('#gib .buzzer').style.display = "";
-                        break;
-                    case "correctReveal":
-                        optionWrapper = scene.getElementsByClassName('options')[0];
-                        if (optionWrapper != undefined) {
-                            optionWrapper.getElementsByClassName('option')[data.index].classList.add('correct');
-                            optionWrapper.querySelectorAll('.option:not(.correct)').forEach((e, i) => {e.classList.add('incorrect')});
-                        } else {
-                            // will i actually use this or nah
-                            console.log("could not find optionWrapper");
-                        }
-                        break;
-                    case "wrongReveal":
-                        optionWrapper = scene.getElementsByClassName('options')[0];
-                        if (optionWrapper != undefined) {
-                            optionWrapper.getElementsByClassName('option')[data.index].classList.add('incorrect');
-                        } else {
-                            // will i actually use this or nah
-                            console.log("could not find optionWrapper");
-                        }
-                        break;
-                    case "gibReveal":
-                        scene.classList.remove('buzzIn');
-                        //scene.classList.add('qHidden');
-                        scene.querySelector('input').classList.add('correct');
-                        scene.querySelector('input').value = data.answer;
-                        scene.querySelector('input').disabled = true;
-                        break;
-                    case "thousand":
-                        scene.classList.remove("active");
-                        scene = document.querySelector("article#thousand");
-                        scene.classList.add("active", "qHidden");
-                        
-                        scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
-                        var options = scene.querySelectorAll(".option");
-                        for (let i = 0; i < options.length; i++) {
-                            options[i].innerHTML = convertBB(data.options[i]);
-                            options[i].classList.remove('correct', 'incorrect');
-                        };
-                        break;
-                    default:
-                        console.error('sceneName is unrecognized: ' + data.sceneName);
-                        return true;
-                }
-                break;
-            default:
-                return true; // undefined
+            }
+            break;
+          default:
+            return true; // undefined
         }
         return false; // no problem
+      }
+      return true;
     }
-    return true;
-}
-function sendToHost(data) {
-    // roomCode: string length 4
-    // additional data with any keys
-    data.type = 'sendToHost';
-    data.roomCode = sessionStorage.getItem("room");
-    data.from =  localStorage.getItem("name");
-    ws.send(JSON.stringify(data));
-    console.log("sent the following to host:", data);
-}
-function sendButton(which, reason) {
-    let data = {
+    function sendToHost(data) {
+      // roomCode: string length 4
+      // additional data with any keys
+      data.type = 'sendToHost';
+      data.roomCode = sessionStorage.getItem("room");
+      data.from = localStorage.getItem("name");
+      ws.send(JSON.stringify(data));
+      console.log("sent the following to host:", data);
+    }
+    function sendButton(which, reason, aux = undefined) {
+      let data = {
         action: 'buttonPress',
         which: which,
         reason: reason
-    };
-    sendToHost(data)
-}
-/* Add event handlers to send input */
-/* Debug keypad */
-let debugKeys = document.getElementById('debugKeypad').querySelectorAll('.debugKey');
-debugKeys.forEach((el, i, parent) => {
-    el.addEventListener('click', () => {
+      };
+      if (aux != undefined) {
+        data.aux = aux;
+      }
+      sendToHost(data)
+    }
+    /* Add event handlers to send input */
+    /* Debug keypad */
+    let debugKeys = document.getElementById('debugKeypad').querySelectorAll('.debugKey');
+    debugKeys.forEach((el, i, parent) => {
+      el.addEventListener('click', () => {
         el.classList.add('pressed');
         sendButton(i, 'debug keypad');
         setTimeout(() => {
-            el.classList.remove('pressed')
+          el.classList.remove('pressed')
         }, 50);
+      });
     });
-});
-/* Skip buttons */
-let skipButtons = document.querySelectorAll('.skipButton');
-skipButtons.forEach((el, i, parent) => {
-    el.addEventListener('click', () => {
+    /* Skip buttons */
+    let skipButtons = document.querySelectorAll('.skipButton');
+    skipButtons.forEach((el, i, parent) => {
+      el.addEventListener('click', () => {
         sendButton(5, 'skip');
+      })
     })
-})
 
-/* Option buttons */
-let options = document.querySelectorAll('#normal .option, #thousand .option');
-options.forEach((el, i) => {
-    el.addEventListener('click', () => {
+    /* Option buttons */
+    let options = document.querySelectorAll('#normal .option, #thousand .option');
+    options.forEach((el, i) => {
+      el.addEventListener('click', () => {
         if (scene.classList.contains('buzzIn') && !(el.classList.contains('incorrect'))) {
-            scene.classList.remove('buzzIn');
-            el.classList.add('pressed');
-            sendButton([1, 3, 5, 4][i % 4], 'answer normal question');
-            setTimeout(() => {
-                el.classList.remove('pressed')
-            }, 50);
-            console.log("Pressed option " + (i % 4 + 1))
+          scene.classList.remove('buzzIn');
+          el.classList.add('pressed');
+          sendButton([1, 3, 5, 4][i % 4], 'answer normal question');
+          setTimeout(() => {
+            el.classList.remove('pressed')
+          }, 50);
+          console.log("Pressed option " + (i % 4 + 1))
         }
-    });
-})
-document.querySelector('#normal .btnLifesaver').addEventListener(
-    'click', () => {
+      });
+    })
+    document.querySelector('#normal .btnLifesaver').addEventListener(
+      'click', () => {
         if (document.getElementById("normal").classList.contains('buzzIn')) {
-            document.getElementById("normal").classList.remove('buzzIn');
-            sendButton(0, 'lifesaver normal question');
-            document.querySelector('#normal .btnLifesaver').style.display = "none";
+          document.getElementById("normal").classList.remove('buzzIn');
+          sendButton(0, 'lifesaver normal question');
+          document.querySelector('#normal .btnLifesaver').style.display = "none";
         }
-    }
-)
-document.querySelector('#sort .sortA').addEventListener(
-    'click', () => {
+      }
+    )
+    document.querySelector('#sort .sortA').addEventListener(
+      'click', () => {
         if (document.getElementById("sort").classList.contains('buzzIn')) {
-            document.getElementById("sort").classList.remove('buzzIn');
-            document.querySelector('#sort .sortA').classList.add('pressed');
-            sendButton(3, 'sort question');
-            setTimeout(() => {
-                document.querySelector('#sort .sortA').classList.remove('pressed')
-            }, 50);
+          document.getElementById("sort").classList.remove('buzzIn');
+          document.querySelector('#sort .sortA').classList.add('pressed');
+          sendButton(3, 'sort question');
+          setTimeout(() => {
+            document.querySelector('#sort .sortA').classList.remove('pressed')
+          }, 50);
         }
-    }
-)
-document.querySelector('#sort .sortB').addEventListener(
-    'click', () => {
+      }
+    )
+    document.querySelector('#sort .sortB').addEventListener(
+      'click', () => {
         if (document.getElementById("sort").classList.contains('buzzIn')) {
-            document.getElementById("sort").classList.remove('buzzIn');
-            document.querySelector('#sort .sortB').classList.add('pressed');
-            sendButton(5, 'sort question');
-            setTimeout(() => {
-                document.querySelector('#sort .sortB').classList.remove('pressed')
-            }, 50);
+          document.getElementById("sort").classList.remove('buzzIn');
+          document.querySelector('#sort .sortB').classList.add('pressed');
+          sendButton(5, 'sort question');
+          setTimeout(() => {
+            document.querySelector('#sort .sortB').classList.remove('pressed')
+          }, 50);
         }
-    }
-)
-document.querySelector('#sort .sortBoth').addEventListener(
-    'click', () => {
+      }
+    )
+    document.querySelector('#sort .sortBoth').addEventListener(
+      'click', () => {
         if (document.getElementById("sort").classList.contains('buzzIn')) {
-            document.getElementById("sort").classList.remove('buzzIn');
-            document.querySelector('#sort .sortBoth').classList.add('pressed');
-            sendButton(1, 'sort question');
-            setTimeout(() => {
-                document.querySelector('#sort .sortBoth').classList.remove('pressed')
-            }, 50);
+          document.getElementById("sort").classList.remove('buzzIn');
+          document.querySelector('#sort .sortBoth').classList.add('pressed');
+          sendButton(1, 'sort question');
+          setTimeout(() => {
+            document.querySelector('#sort .sortBoth').classList.remove('pressed')
+          }, 50);
         }
-    }
-)
-document.querySelector('#gib .buzzer').addEventListener(
-    'click', () => {
+      }
+    )
+    document.querySelector('#gib .buzzer').addEventListener(
+      'click', () => {
         if (document.getElementById("gib").classList.contains('buzzIn')) {
-            sendButton(5, 'all outta salt buzz in');
+          sendButton(5, 'all outta salt buzz in');
         } else if (document.getElementById('gib').classList.contains('yourTurn')) {
-            updateText(true);
-            document.querySelector('#gib .buzzer').style.display = "none";
+          updateText(true);
+          document.querySelector('#gib .buzzer').style.display = "none";
         }
-    }
-)
+      }
+    )
+    options = document.querySelectorAll('#rush .optionRush');
+    options.forEach((el, i) => {
+      el.addEventListener('click', () => {
+        let tick = document.getElementById(el.htmlFor);
+        if (!tick.disabled) {
+          el.classList.add('pressed')
+          sendButton(i, tick.checked ? 'rush false' : 'rush true', +!tick.checked);
+          setTimeout(() => {
+            el.classList.remove('pressed')
+          }, 50);
+          console.log("Toggled option " + (i + 1) + " o" + (tick.checked ? "ff" : "n"))
+        }
+      });
+    })
 
-const updateText = (finalize) => {
-    console.log("Updating text content");
-    sendToHost({
+    const updateText = (finalize) => {
+      console.log("Updating text content");
+      sendToHost({
         action: 'updateText',
         message: document.querySelector('#gib input').value,
         finalize: !!finalize
-    });
-}
+      });
+    }
 
-const sendTextContent = debounce(
-    updateText, 125, false
-);
+    const sendTextContent = debounce(
+      updateText, 125, false
+    );
 
-document.querySelector('#gib input').addEventListener(
-    'input', () => {
+    document.querySelector('#gib input').addEventListener(
+      'input', () => {
         console.log("Text changed")
         sendTextContent();
-    }
-);
+      }
+    );
 
-sendToHost({
-    'action': 'requestNick'
-});
+    sendToHost({
+      'action': 'requestNick'
+    });
 
-/** END INJECTED SCRIPT **/
-</script>
+    /** END INJECTED SCRIPT **/
+  </script>
 
 </body>
