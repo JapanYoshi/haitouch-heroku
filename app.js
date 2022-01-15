@@ -217,8 +217,23 @@ wss.on('connection', function(ws) {
                         // room exists
                         let rm = rooms[data.roomCode];
                         console.log(rm);
+                        // is user already in? (if so, rejoin)
+                        if (rm.playerNames.includes(name)) {
+                            sockets[rm.host].send(JSON.stringify({
+                                type: 'onPlayerJoin',
+                                name: name,
+                                nick: data.nick
+                            }));
+                            rm.playerNames.push(name);
+                            ws.send(JSON.stringify({
+                                type: 'onJoinRoom',
+                                message: "Rejoined Room " + data.roomCode + " successfully.",
+                                controller: rm.controller
+                            }) );
+                            console.log("Welcome back!");
+                        }
                         // is room full?
-                        if (rm.status == ROOM_STAT.FULL) {
+                        else if (rm.status == ROOM_STAT.FULL) {
                             sendError("Room " + data.roomCode + " is full.");
                             break;
                         }
@@ -230,11 +245,6 @@ wss.on('connection', function(ws) {
                         // is game ended?
                         else if (rm.status == ROOM_STAT.INGAME) {
                             sendError("Room " + data.roomCode + " has already finished playing.");
-                            break;
-                        }
-                        // is user already in?
-                        else if (rm.playerNames.includes(name)) {
-                            sendError("You are already in Room " + data.roomCode + ".");
                             break;
                         }
                         // all clear, join.
@@ -329,23 +339,27 @@ wss.on('connection', function(ws) {
     // When a socket closes, or disconnects, remove it from the array.
     ws.on('close', function() {
         if (closeRoomBy(name)) {
-            let found = false
-            for (const [k, v] of Object.entries(rooms)) {
-                for (i = 0; i < v.playerNames.length; i++) {
-                    if (v.playerNames[i] == name) {
-                        found = true;
-                        v.playerNames.splice(i, 1);
-                        sockets[v.host].send(JSON.stringify({
-                            type: 'onRoomLeave',
-                            message: name
-                        }));
-                        break
-                    }
-                }
-                if (found) {break;}
-            }
+            // don't automatically leave, player may rejoin
+            // let found = false
+            // for (const [k, v] of Object.entries(rooms)) {
+            //     for (i = 0; i < v.playerNames.length; i++) {
+            //         if (v.playerNames[i] == name) {
+            //             found = true;
+            //             v.playerNames.splice(i, 1);
+            //             sockets[v.host].send(JSON.stringify({
+            //                 type: 'onRoomLeave',
+            //                 message: name
+            //             }));
+            //             break
+            //         }
+            //     }
+            //     if (found) {break;}
+            // }
         };
         delete sockets[name];
+        console.log(`Bye, ${name}!`);
+        console.log("sockets dict now has these keys: " + Object.keys(sockets))
+        return;
     });
 
     // Close the room, whether due to unintentional disconnection or due to manual closing.

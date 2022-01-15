@@ -10,13 +10,13 @@
 }
 
 html {
-    font-family: "Atkinson Hyperlegible", sans-serif;
     background-color: var(--purple2);
     color: #fff;
 }
 
 #roomClosedBg {
     position: fixed;
+    font-family: "Atkinson Hyperlegible", sans-serif;
     background-color: rgba(0, 0, 0, 0.75);
     top: 0;
     left: 0;
@@ -40,6 +40,15 @@ html {
     flex-direction: column;
 }
 
+#roomClosedThanks {
+    font-size: 80%;
+    font-weight: bold;
+    font-style: italic;
+    text-transform: uppercase;
+    opacity: 0.8;
+    letter-spacing: 0.2em;
+}
+
 #roomClosedModal button {
     margin-bottom: 0;
 }
@@ -54,7 +63,7 @@ html {
 #handImage {
     position: absolute;
     left: 2rem;
-    top: 0rem;
+    top: 0.5rem;
     width: 10rem;
     height: 10rem;
     background-image: url("img/bye.svg");
@@ -101,6 +110,7 @@ header #logo {
 }
 
 #main {
+    font-family: "Atkinson Hyperlegible", sans-serif;
     width: auto;
     max-width: 540px;
     margin: 0 auto;
