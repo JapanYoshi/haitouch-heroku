@@ -295,6 +295,41 @@ wss.on('connection', function(ws) {
                     sendError("No such room exists: " + data.roomCode + ".");
                 }
                 break;
+            case 'kickFromRoom':
+                console.log('received kickFromRoom');
+                // expected keys: roomCode, name, message (optional)
+                if (rooms[data.roomCode]) {
+                    // room exists
+                    if (rooms[data.roomCode].host != name) {
+                        sendError("You are not the host of room " + data.roomCode + ".");
+                    } else {
+                        if ("name" in data) {
+                            // search for player
+                            let found = false;
+                            for (let i = 0; i < rooms[data.roomCode].playerNames.length; i++) {
+                                if (rooms[data.roomCode].playerNames[i] == data.name) {
+                                    sockets[data.name].send(JSON.stringify({
+                                        type: 'onKick',
+                                        message: data.message
+                                    }));
+                                    rooms[data.roomCode].playerNames.splice(
+                                        i , 1
+                                    );
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                sendError("The player " + data.name + " is not in your room.");
+                            }
+                        } else {
+                            sendError("The key 'name' is absent.");
+                        }
+                    }
+                } else {
+                    sendError("No such room exists: " + data.roomCode + ".");
+                }
+                break;
             case 'sendToRoom':
                 console.log("received sendToRoom");
                 // expected keys: roomCode (string length 4). should contain additional data

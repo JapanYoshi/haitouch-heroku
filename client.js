@@ -91,6 +91,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 case 'onRoomClosed':
                     roomClosedModal("Room closed.");
                     break
+                case 'onKick':
+                    if (data.message != undefined) {
+                        roomClosedModal(data.message);
+                    } else {
+                        roomClosedModal('Sorry, you have been kicked.');
+                    }
+                    break
                 default:
                     console.log('Undefined message type: ' + data.type);
         }
@@ -160,6 +167,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     var inputRc = document.getElementById('rc');
     var inputNick = document.getElementById('nick');
     var btnJoin = document.getElementById('btnJoin');
+    var roomStatus = document.getElementById('roomStatus');
     var joinStatus = document.getElementById('joinStatus');
 
     /*
@@ -167,39 +175,56 @@ document.addEventListener('DOMContentLoaded', ()=>{
      */
     function validateChange() {
         let rc = inputRc.value.toUpperCase();
-        let nick = inputNick.value;
+        document.querySelector("label[for=rc] + .letterCount").innerText = `${rc.length}/4`;
         if (
             rc.length == 4 &&
-            inputRc.validity.valid &&
-            inputNick.validity.valid
+            inputRc.validity.valid
         ) {
             roomStatus.innerText = "...";
-            ws.send(JSON.stringify({
-                type: "queryRoom",
-                roomCode: rc
-            }));
+            let data = {
+                "type": "queryRoom",
+                "roomCode": rc
+            };
+            console.log(data);
+            let dataStr = JSON.stringify(data);
+            console.log("ws =", ws, "ws.send =", ws.send, "dataStr =", dataStr, ". Calling ws.send(dataStr)");
             inputNick.focus();
+            if (ws.readyState == ws.OPEN) {
+                ws.send(dataStr);
+            }
         } else {
             btnJoin.disabled = true;
             roomStatus.innerText = "Room code must be 4 capital letters.";
         }
     }
     inputRc.addEventListener("input", debounce(validateChange, 125));
-    
+    validateChange();
     /*
      *  If the nickname contains curly Unicode single quotes,
      *  replace them with the allowed typewriter/ASCII single quotes.
      */
-    window.fixQuotes = (el) => {
+    var fixQuotes = (el) => {
         // replace unicode single quotes
         var start = el.selectionStart;
         var end = el.selectionEnd;
-        const quotes = /[\u2018-\u201b]/g
+        const quotes = /[\u2018\u2019\u201b]/g
         el.value = el.value.replaceAll(quotes, "'");
+        el.value = el.value.replaceAll('\u201a', ",");
+        console.log("Fixed quotes:", el.value);
         el.setSelectionRange(start, end);
+        document.querySelector("label[for=nick] + .letterCount").innerText = `${el.value.length}/12`;
     }
-    inputNick.addEventListener("input", ()=>{window.fixQuotes(inputNick)});
-    window.fixQuotes(inputNick)
+
+    inputNick.addEventListener("input", ()=>{
+        fixQuotes(inputNick);
+        var nameRegex = RegExp("^[ !',-./0-9?A-Za-z]{0,12}$");
+        if (nameRegex.test(inputNick.value)) {
+            document.getElementById("btnJoin").disabled = false;
+        } else {
+            document.getElementById("btnJoin").disabled = true;
+        }
+    });
+    fixQuotes(inputNick);
     inputNick.addEventListener('keypress', (e) => {
         if (e.key == "Enter") {
             document.getElementById('btnJoin').click();

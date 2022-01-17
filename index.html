@@ -26,13 +26,19 @@
     </header>
     <div id="main">
         <div id="join">
-            <label for="rc">Room code</label>
+            <div class="letterCountSplit">
+                <label for="rc">Room code</label>
+                <span class="letterCount">0/4</span>
+            </div>
             <input style="text-transform: uppercase;" name="rc" id="rc" type="text"
             pattern="[A-Za-z]{4}" maxlength="4" title="4 capital letters.">
             <div id="roomStatus">Room code must be 4 capital letters.</div>
-            <label for="nick">Nickname (optional)</label>
+            <div class="letterCountSplit">
+                <label for="nick">Nickname <i>(optional)</i></label>
+                <span class="letterCount">0/12</span>
+            </div>
             <input style="text-transform: uppercase;" name="nick" id="nick" type="text"
-            pattern="[ !',-./0-9?A-Za-z]{0,12}" maxlength="12" title="Up to 12 letters, numbers, and limited symbols: !',-./?">
+            maxlength="12" title="Up to 12 letters, numbers, and limited symbols: !',-./?">
             <button id="btnJoin">Join room</button>
             <div id="joinStatus"></div>
             <div id="finePrint">
