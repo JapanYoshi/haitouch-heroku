@@ -830,15 +830,19 @@
     var scene = document.querySelector("article#standby");
     /* Change BBcode tags to HTML tags */
     function convertBB(bbcode) {
-      return bbcode
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/\[b\]/g, '<strong>')
-        .replace(/\[\/b\]/g, '</strong>')
-        .replace(/\[i\]/g, '<em>')
-        .replace(/\[\/i\]/g, '</em>')
-        .replace(/\[code\]/g, '<code>')
-        .replace(/\[\/code\]/g, '</code>');
+      if (typeof bbcode == String) {
+        return bbcode
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/\[b\]/g, '<strong>')
+          .replace(/\[\/b\]/g, '</strong>')
+          .replace(/\[i\]/g, '<em>')
+          .replace(/\[\/i\]/g, '</em>')
+          .replace(/\[code\]/g, '<code>')
+          .replace(/\[\/code\]/g, '</code>');
+      } else {
+        return "Error in funtion convertBB"
+      }
     }
     window.gameSpecificHandler = (data) => {
       if (data.type == "sendToRoom" || data.type == "onMessage") {
