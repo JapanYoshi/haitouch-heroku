@@ -337,7 +337,9 @@ wss.on('connection', function(ws) {
                     // room exists
                     if (rooms[data.roomCode].host == name) {
                         rooms[data.roomCode].playerNames.forEach((e) => {
-                            sockets[e].send(JSON.stringify(data));
+                            if (sockets.hasOwnProperty(e)) {
+                                sockets[e].send(JSON.stringify(data))
+                            };
                         });
                     } else {
                         sendError("You are not the host of room " + data.roomCode + ".");
@@ -406,7 +408,7 @@ wss.on('connection', function(ws) {
                 found = true
                 console.log("Found the room. Room code is " + k);
                 v.playerNames.forEach((e) => {
-                    if (sockets[e]) {
+                    if (sockets.hasOwnProperty(e)) {
                         sockets[e].send(JSON.stringify({
                             type: 'onRoomClosed',
                             message: ""
