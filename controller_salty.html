@@ -830,7 +830,7 @@
     var scene = document.querySelector("article#standby");
     /* Change BBcode tags to HTML tags */
     function convertBB(bbcode) {
-      if (typeof bbcode == String) {
+      if (typeof bbcode == "string") {
         return bbcode
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;')
@@ -841,6 +841,7 @@
           .replace(/\[code\]/g, '<code>')
           .replace(/\[\/code\]/g, '</code>');
       } else {
+        console.error("convertBB could not convert this content because it is not a string:", bbcode);
         return "Error in funtion convertBB"
       }
     }
@@ -1029,7 +1030,7 @@
                 scene.classList.remove("active");
                 scene = document.querySelector("article#thousand");
                 scene.classList.add("active", "qHidden");
-
+                console.log('data.question is', data.question, 'type of data.question is', typeof(data.question));
                 scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
                 var options = scene.querySelectorAll(".option");
                 for (let i = 0; i < options.length; i++) {
