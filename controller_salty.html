@@ -157,10 +157,13 @@
       .logo {
         opacity: 0;
         position: absolute;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
+        left: 50%;
+        top: 50%;
+        width: 100%;
+        height: 100%;
+        max-width: 640px;
+        max-height: 360px;
+        transform: translate(-50%, -50%);
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
@@ -319,7 +322,6 @@
 
       .option {
         display: block;
-        width: fill;
         text-align: left;
         background-color: var(--col-darkgray);
         border: 1px solid var(--col-lightgray);
@@ -954,7 +956,7 @@
               case "sortQuestion":
                 scene.classList.remove("qHidden");
                 scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
-                if (scene.getElementsByClassName('correct')) {
+                if (scene.getElementsByClassName('correct').length > 0) {
                   scene.getElementsByClassName('correct')[0].classList.remove("correct");
                 }
                 break;
@@ -983,8 +985,11 @@
                 scene.classList.add("active", "qHidden");
 
                 scene.getElementsByClassName('question')[0].innerText = data.question;
+                scene.querySelector('input').classList.remove("correct");
+                scene.querySelector('input').value = "";
                 scene.querySelector('input').disabled = true;
                 scene.getElementsByClassName('buzzer')[0].innerText = "I know this one!";
+                for (let i = 0; i <= 2; i++) {scene.querySelectorAll('.gibClue')[i].innerHTML = `Wait for clue ${i+1}...`};
                 document.querySelector('#gib .buzzer').style.display = "";
                 break;
               case "gibClue":
@@ -1233,6 +1238,22 @@
     const sendTextContent = debounce(
       updateText, 125, false
     );
+
+    
+    /*
+     *  If the nickname contains curly Unicode single quotes,
+     *  replace them with the allowed typewriter/ASCII single quotes.
+     */
+    const fixQuotes = (el) => {
+      // replace unicode single quotes
+      var start = el.selectionStart;
+      var end = el.selectionEnd;
+      const quotes = /[\u2018\u2019\u201b]/g
+      el.value = el.value.replaceAll(quotes, "'");
+      el.value = el.value.replaceAll('\u201a', ",");
+      console.log("Fixed quotes:", el.value);
+      el.setSelectionRange(start, end);
+    }
 
     document.querySelector('#gib input').addEventListener(
       'input', () => {
