@@ -1041,10 +1041,10 @@
                 scene.classList.remove("active");
                 scene = document.querySelector("article#rush");
                 scene.classList.add("active", "qHidden");
+                scene.querySelector('.clue').innerHTML = convertBB(data.title);
                 scene.querySelector('.clue').style.display = "none";
                 break;
               case "rushClue":
-                scene.querySelector('.clue').innerHTML = convertBB(data.clue);
                 scene.querySelector('.clue').style.display = "block";
                 break;
               case "rushSection":

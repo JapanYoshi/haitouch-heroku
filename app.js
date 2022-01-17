@@ -166,7 +166,7 @@ wss.on('connection', function(ws) {
                         gameName: data.gameName,
                         status: ROOM_STAT.OPEN,
                         playerNames: [],
-                        controller: "controller_salty.html" // hardcoded because there's only one game
+                        controller: data.controller
                     };
                     // confirm success
                     ws.send(JSON.stringify({
