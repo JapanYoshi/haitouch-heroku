@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         console.log("stringified is", jsonString);
         ws.send(jsonString);
         // keep sending a message once in a while
-        setInterval(() => {ws.send("{'type':'heartbeat'}")}, 3000);
+        setInterval(()=>{ws.send("{\"type\":\"heartbeat\"}")}, 3000);
     });
     
     ws.onclose = (event => {
