@@ -75,7 +75,7 @@ wss.on('connection', function(ws) {
             case 'heartbeat':
                 heartbeat_log.push(name);
                 if (heartbeat_log.length >= 8) {
-                    console.log("heartbeats: ", heartbeat_log);
+                    console.log("heartbeats: ", JSON.stringify(heartbeat_log));
                     heartbeat_log = [];
                 }
                 break;
