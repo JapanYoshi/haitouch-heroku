@@ -58,6 +58,7 @@ let sockets = {};
 // A dictionary with the key being the room code
 // and the value being the assigned ID of the host of that room code.
 let rooms = {};
+let heartbeat_log = [];
 wss.on('connection', function(ws) {
     var name = shortid.generate();
     console.log(`New client connected. Generated ID: ${name}`);
@@ -72,7 +73,11 @@ wss.on('connection', function(ws) {
         }
         switch (data.type) {
             case 'heartbeat':
-                // do nothing
+                heartbeat_log.push(name);
+                if (heartbeat_log.length >= 8) {
+                    console.log("heartbeats: ", heartbeat_log);
+                    heartbeat_log = [];
+                }
                 break;
             case 'hello':
                 // msg.name has last used name
