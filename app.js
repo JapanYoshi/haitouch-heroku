@@ -53,6 +53,23 @@ var shortid = require('shortid');
 const { send } = require("process");
 const { readlink } = require("fs");
 
+// rejects bad room codes
+// lots of them are based on pokemon nickname censors
+// ref: https://bulbapedia.bulbagarden.net/wiki/List_of_censored_words_in_Generation_V
+const badRoomCodes = ["ARSE","ARSH","BICH","BITE","BSTD","BTCH","CAZI","CAZO","CAZZ","CCUM","CHNK","CLIT","COCC","COCK","COCU","COKC","COKK","CONO","COON","CUCK","CULE","CULO","CUUL","CUMM","CUMS","CUNT","CUUM","DAMN","DICC","DICK","DICS","DICX","DIKC","DIKK","DIKS","DIKX","DIXX","DKHD","DYKE","FAAG","FAGG","FAGS","FFAG","FICA","FICK","FIGA","FOTZ","FCUK","FUCC","FUCK","FUCT","FUCX","FUKC","FUKK","FUKT","FUKX","FUXX","GIMP","GYPS","HEIL","HOES","HOMO","HORE","HTLR","JODA","JODE","JAPS","JEWS","JIPS","JIZZ","KACK","KIKE","KUNT","MERD","MRCA","MRCN","MRDE","NAZI","NCUL","NEGR","NGGR","NGRR","NGRS","NIGG","NIGR","NUTE","NUTT","PAKI","PCHA","PEDE","PEDO","PHUC","PHUK","PINE","PISS","PLLA","PNIS","POOP","PORN","POYA","PUTA","PUTE","PUTN","PUTO","RAEP","RAPE","SECS","SECX","SEKS","SEKX","SEXX","SHAT","SHIT","SHIZ","SHYT","SIMP","SLAG","SPAS","SPAZ","SPRM","TARD","TITS","TROA","TROI","TWAT","VAGG","VIOL","WANK","WHOR"];
+const badRoomSubstr = ["ASS","FAG","KKK"];
+function isBadRoomCode(roomCode) {
+    if (badRoomCodes.includes(roomCode)) {
+        return true;
+    }
+    for (let i = 0; i < badRoomSubstr.length; i++) {
+        if (roomCode.indexOf(badRoomSubstr[i]) !== -1) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // A dictionary with the key being the assigned ID and the value being the socket.
 let sockets = {};
 // A dictionary with the key being the room code
@@ -147,6 +164,10 @@ wss.on('connection', function(ws) {
                         sendError("Room code must be 4 characters long.");
                         break;
                     }
+                    if (isBadRoomCode(data.roomCode)) {
+                        sendError("Room code is forbidden.");
+                        break;
+                    }
                     if (data.gameName.length == 0) {
                         sendError("Game name must not be empty.");
                         break;
@@ -190,6 +211,10 @@ wss.on('connection', function(ws) {
                     // OK
                     if (data.roomCode.length != 4) {
                         sendError("Room code must be 4 characters long.");
+                        break;
+                    }
+                    if (isBadRoomCode(data.roomCode)) {
+                        sendError("This room code is forbidden.");
                         break;
                     }
                     if (rooms[data.roomCode]) {
