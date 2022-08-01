@@ -87,7 +87,7 @@
         /* Internet Explorer/Edge */
         user-select: none;
         /* Non-prefixed version, currently
-                                                supported by Chrome, Edge, Opera and Firefox */
+        supported by Chrome, Edge, Opera and Firefox */
       }
 
       #game {
@@ -210,8 +210,16 @@
         display: block;
       }
 
-      article#normal:not(candy) .logoGame {
+      article#normal:not(.candy) .logoCandy {
+        display: none;
+      }
+
+      article#normal.rage .logoRage {
         display: block;
+      }
+
+      article#normal:not(.rage) .logoRage {
+        display: none;
       }
 
       article#standby {
@@ -227,6 +235,10 @@
       }
 
       article#normal.candy {
+        background-color: #a95c72;
+      }
+
+      article#normal.rage {
         background-color: #a95c72;
       }
 
@@ -718,6 +730,7 @@
       <div class="filter"></div>
       <div class="logo logoGame" style="background-image: url('salty/logo_game.png')"></div>
       <div class="logo logoCandy" style="background-image: url('salty/logo_candy.png')"></div>
+      <div class="logo logoRage" style="background-image: url('salty/logo_rage.png')"></div>
       <div class="filter"></div>
       <div class="questionFlex">
         <div class="question">
@@ -747,13 +760,13 @@
       <div class="logo active" style="background-image: url('salty/logo_sorta.png')"></div>
       <div class="questionFlex">
         <div class="question">
-          quarter-pound beef patty
+          q
         </div>
         <div class="sortBox">
           <div class="sortBoth">both</div>
           <div class="sortAB">
-            <div class="sortA">Big Mac®</div>
-            <div class="sortB">Whopper®</div>
+            <div class="sortA">a</div>
+            <div class="sortB">b</div>
           </div>
         </div>
       </div>
@@ -764,7 +777,7 @@
       <div class="logo active" style="background-image: url('salty/logo_gib.png')"></div>
       <div class="questionFlex">
         <div class="question">
-          Question
+          q
         </div>
         <div id="gibClues">
           <div class="gibClue">
@@ -788,7 +801,7 @@
       <div class="filter"></div>
       <div class="questionFlex">
         <div class="question">
-          Question
+          q
         </div>
         <div class="options">
           <div class="option">
@@ -967,10 +980,12 @@
                 scene.classList.add("active");
                 break;
               case "normal":
+              case "candy":
+              case "rage":
                 scene.classList.remove("active");
                 scene = document.querySelector("article#normal");
-                scene.classList.remove("candy");
-                scene.classList.add("active", "qHidden");
+                scene.classList.remove("normal", "candy", "rage");
+                scene.classList.add("active", "qHidden", data.sceneName);
 
                 scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
                 var options = scene.querySelectorAll(".option");
@@ -979,18 +994,6 @@
                   options[i].classList.remove('correct', 'incorrect');
                 };
 
-                break;
-              case "candy":
-                scene.classList.remove("active");
-                scene = document.querySelector("article#normal");
-                scene.classList.add("active", "qHidden", "candy");
-
-                scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
-                var options = scene.getElementsByClassName("option");
-                for (let i = 0; i < options.length; i++) {
-                  options[i].innerHTML = convertBB(data.options[i]);
-                  options[i].classList.remove('correct', 'incorrect');
-                };
                 break;
               case "sort":
                 scene.classList.remove("active");
