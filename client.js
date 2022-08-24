@@ -4,11 +4,25 @@ document.addEventListener('DOMContentLoaded', ()=>{
         document.getElementById('roomClosedMessage').innerHTML = message;
     }
     
-    var output = document.getElementById('output');
-    var roomStatus = document.getElementById('roomStatus');
-    var myName = document.getElementById('myName');
-    var host = location.origin.replace(/^http/, 'ws');
-    var ws = new WebSocket(host);
+    // 0: open
+    // 1: full (audience not full)
+    // 2: full (audience full, or not available)
+    // 3: ingame
+    // 4: post-game
+    const roomStatusTexts = {
+        0: "Join as player",
+        1: "Join the audience",
+        2: "Sorry, room is full!",
+        3: "Sorry, can’t join now!",
+        4: "Sorry, game’s already over!"
+    }
+    
+    const output = document.getElementById('output');
+    const roomName = document.getElementById('roomName');
+    const roomStatus = document.getElementById('roomStatus');
+    const myName = document.getElementById('myName');
+    const host = location.origin.replace(/^http/, 'ws');
+    const ws = new WebSocket(host);
     window.ws = ws; // lets me use this in other scripts
     // function heartbeat(){
     //     ws.send(JSON.stringify({
@@ -83,10 +97,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
                     break
                 case 'roomFound':
                     btnJoin.disabled = false;
-                    roomStatus.innerText = data.gameName;
+                    roomName.innerText = data.gameName;
+                    roomStatus.innerText = roomStatusTexts[data.status];
                     break
                 case 'roomNotFound':
                     btnJoin.disabled = true;
+                    roomName.innerText = "N/A";
                     roomStatus.innerText = "Couldn’t find room " + inputRc.value.toUpperCase() + ".";
                     break
                 case 'onRoomClosed':
@@ -167,11 +183,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
     /*\
     |*| Join lobby stuff.
     \*/
-    var inputRc = document.getElementById('rc');
-    var inputNick = document.getElementById('nick');
-    var btnJoin = document.getElementById('btnJoin');
-    var roomStatus = document.getElementById('roomStatus');
-    var joinStatus = document.getElementById('joinStatus');
+    const inputRc = document.getElementById('rc');
+    const inputNick = document.getElementById('nick');
+    const btnJoin = document.getElementById('btnJoin');
+    const joinStatus = document.getElementById('joinStatus');
     
     // Query string autofill
     const searchParams = new URLSearchParams(window.location.search);
@@ -189,6 +204,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             rc.length == 4 &&
             inputRc.validity.valid
         ) {
+            roomName.innerText = "Fetching game name...";
             roomStatus.innerText = "...";
             let data = {
                 "type": "queryRoom",
@@ -203,6 +219,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             }
         } else {
             btnJoin.disabled = true;
+            roomName.innerText = "...";
             roomStatus.innerText = "Room code must be 4 capital letters.";
         }
     }

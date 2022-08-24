@@ -132,15 +132,34 @@ header #logo {
     flex-grow: 1;
 }
 
+#roomName, #roomStatus, #joinStatus {
+    margin: 0.5rem 0 0.5rem;
+    font-size: 1rem;
+    line-height: 1rem;
+    text-align: right;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+#roomName {
+    font-weight: bold;
+}
+
 #roomStatus {
-    height: 1.5rem;
+    margin-top: 0;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#joinStatus {
+    color: var(--blue2);
 }
 
 #btnJoin {
-    margin-top: 1rem;
+    margin: 1rem auto 1rem;
 }
 
 #finePrint {
+    margin-top: 2rem;
     text-align: center;
     font-size: 75%;
 }
@@ -204,10 +223,4 @@ input[type=text] {
     background-color: white;
     border: 2px solid lightgray;
     box-sizing: border-box;
-}
-
-#roomStatus {
-    text-align: right;
-    font-style: italic;
-    color: rgba(255, 255, 255, 0.7);
 }

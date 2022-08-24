@@ -18,7 +18,7 @@
                 <div id="handImage"></div>
             </div>
             <div id="roomClosedMessage">Disconnected from server.</div>
-            <button type="button" onclick="location.reload()">OK</button>
+            <button type="button" onclick="location.reload()">Reload page</button>
         </div>
     </div>
     <header>
@@ -31,16 +31,17 @@
                 <span class="letterCount">0/4</span>
             </div>
             <input style="text-transform: uppercase;" name="rc" id="rc" type="text"
-            pattern="[A-Za-z]{4}" maxlength="4" title="4 capital letters.">
+            pattern="[A-Za-z]{4}" maxlength="4" title="4 capital letters." placeholder="ABCD">
+            <div id="roomName">...</div>
             <div id="roomStatus">Room code must be 4 capital letters.</div>
             <div class="letterCountSplit">
                 <label for="nick">Nickname <i>(optional)</i></label>
                 <span class="letterCount">0/12</span>
             </div>
             <input style="text-transform: uppercase;" name="nick" id="nick" type="text"
-            maxlength="12" title="Up to 12 letters, numbers, and limited symbols: !',-./?">
+            maxlength="12" title="Up to 12 letters, numbers, and limited symbols: !',-./?" placeholder="PLAYER">
+            <div id="joinStatus">Press button to join.</div>
             <button id="btnJoin">Join room</button>
-            <div id="joinStatus"></div>
             <div id="finePrint">
                 By clicking “Join room”, you agree to our <a href="https://haitouch.ga/tos">Terms of Service</a>.<br>
                 Created by <a href="https://haitouch.ga">hai!touch Studios</a><br>
