@@ -41,8 +41,9 @@ const wss = new WebSocket.Server({
 const ROOM_STAT = {
     OPEN: 0,
     FULL: 1,
-    INGAME: 2,
-    ENDED: 3
+    FULL_AUDI: 2,
+    INGAME: 3,
+    ENDED: 4
 }
 
 server.listen(port);
@@ -172,10 +173,16 @@ wss.on('connection', function(ws) {
                         sendError("Game name must not be empty.");
                         break;
                     }
+                    if (!data.hasOwnProperty('maxPlayers')) {
+                        sendError("Missing property maxPlayers (integer).");
+                    }
+                    if (!data.hasOwnProperty('maxAudience')) {
+                        sendError("Missing property maxAudience (integer).");
+                    }
                     let found = false
                     for (const [k, v] of Object.entries(rooms)) {
                         if (v.host == name) {
-                            // room already exists
+                            // you're already hosting a different room
                             sendError("You are already hosting a room with the room code " + k);
                             found = true;
                             break;
@@ -183,7 +190,7 @@ wss.on('connection', function(ws) {
                     }
                     if (found) break;
                     if (rooms[data.roomCode]) {
-                        // room exists
+                        // a room with that room code exists
                         sendError("The room code " + data.roomCode + " is already taken.");
                         break;
                     }
@@ -192,7 +199,11 @@ wss.on('connection', function(ws) {
                         gameName: data.gameName,
                         status: ROOM_STAT.OPEN,
                         playerNames: [],
-                        controller: data.controller
+                        controller: data.controller,
+                        players: 0,
+                        maxPlayers: data.maxPlayers,
+                        audience: 0,
+                        maxAudience: data.maxAudience
                     };
                     // confirm success
                     ws.send(JSON.stringify({
@@ -261,17 +272,18 @@ wss.on('connection', function(ws) {
                                 controller: rm.controller
                             }) );
                             console.log("Welcome back!");
+                            break;
                         }
                         // is room full?
-                        else if (rm.status == ROOM_STAT.FULL) {
+                        else if (rm.status == ROOM_STAT.FULL_AUDI) {
                             sendError("Room " + data.roomCode + " is full.");
                             break;
                         }
                         // is game in progress?
-                        else if (rm.status == ROOM_STAT.INGAME) {
+                        /*else if (rm.status == ROOM_STAT.INGAME) {
                             sendError("Room " + data.roomCode + " has already started playing.");
                             break;
-                        }
+                        }*/
                         // is game ended?
                         else if (rm.status == ROOM_STAT.INGAME) {
                             sendError("Room " + data.roomCode + " has already finished playing.");
@@ -279,10 +291,15 @@ wss.on('connection', function(ws) {
                         }
                         // all clear, join.
                         else {
+                            let asAudience = false;
+                            if (rm.players >= rm.maxPlayers) {
+                                asAudience = true;
+                            }
                             sockets[rm.host].send(JSON.stringify({
                                 type: 'onPlayerJoin',
                                 name: name,
-                                nick: data.nick
+                                nick: data.nick,
+                                asAudience: asAudience
                             }));
                             rm.playerNames.push(name);
                             ws.send(JSON.stringify({
@@ -291,6 +308,23 @@ wss.on('connection', function(ws) {
                                 controller: rm.controller
                             }) );
                             console.log("Welcome!");
+                            // keep count of players
+                            if (asAudience) {
+                                rm.audience ++;
+                                if (rm.audience >= rm.maxAudience) {
+                                    rm.status = ROOM_STAT.FULL_AUDI;
+                                }
+                            }
+                            else {
+                                rm.players ++;
+                                if (rm.players >= rm.maxPlayers) {
+                                    if (rm.maxAudience <= 0) {
+                                        rm.status = ROOM_STAT.FULL_AUDI;
+                                    } else {
+                                        rm.status = ROOM_STAT.FULL;
+                                    }
+                                }
+                            }
                         }
                     } else {
                         // room does not exist
