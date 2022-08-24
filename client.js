@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         document.getElementById('roomClosedBg').hidden = false;
         document.getElementById('roomClosedMessage').innerHTML = message;
     }
+    
     var output = document.getElementById('output');
     var roomStatus = document.getElementById('roomStatus');
     var myName = document.getElementById('myName');
@@ -171,6 +172,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
     var btnJoin = document.getElementById('btnJoin');
     var roomStatus = document.getElementById('roomStatus');
     var joinStatus = document.getElementById('joinStatus');
+    
+    // Query string autofill
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.has('r')) {
+        document.getElementById('rc').value = searchParams.get('r').toUpperCase();
+    }
 
     /*
      *  Only if the room code and nick are valid, enable the "join" button.
