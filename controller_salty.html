@@ -140,6 +140,20 @@
         background-position-y: top 0%;
         vertical-align: top;
         transform: rotate(7deg) translate(-2rem, 0.5rem);
+        color: transparent;
+      }
+
+      #nickname {
+        font-weight: bold;
+      }
+
+      #score {
+        padding-left: 0.25rem;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      #score.negative {
+        color: var(--col-red);
       }
 
       article {
@@ -298,6 +312,12 @@
         left: 0;
         display: flex;
         flex-direction: column;
+      }
+
+      .audienceWarning {
+        margin: 1rem 1rem 0;
+        color: var(--col-red);
+        text-shadow: 0px 1px 4px black;
       }
 
       .question {
@@ -698,6 +718,7 @@
     <header>
       <div id="playerNumber"></div>
       <span id="nickname">SIGNING UP...</span>
+      <span id="score">$0</span>
     </header>
     <article class="active" id="standby">
       <div class="filter"></div>
@@ -776,6 +797,7 @@
       <div class="filter"></div>
       <div class="logo active" style="background-image: url('salty/logo_gib.png')"></div>
       <div class="questionFlex">
+        <div class="audienceWarning">Audience members can answer at any time.</div>
         <div class="question">
           q
         </div>
@@ -798,8 +820,8 @@
     <article class="" id="thousand">
       <div class="filter"></div>
       <div class="logo active" style="background-image: url('salty/logo_thousand.png')"></div>
-      <div class="filter"></div>
       <div class="questionFlex">
+        <div class="audienceWarning">Audience members only get the normal point value, but can answer at any time.</div>
         <div class="question">
           q
         </div>
@@ -915,6 +937,7 @@
             console.log("game-specific handling of message type " + data.type + ", action " + data.action);
             document.getElementById('nickname').innerText = data.nick;
             // set player number at the top of the screen
+            document.getElementById('playerNumber').innerText = data.playerIndex;
             document.getElementById('playerNumber').style.backgroundPositionX = (
               25 * (
                 data.playerIndex < 4 ?
@@ -926,6 +949,10 @@
               data.playerIndex < 4 ?
                 '0%' : '100%'
             );
+            // also hide the lifesaver button if the player is audience (index 8)
+            if (data.playerIndex == 8) {
+              document.querySelector('#normal .btnLifesaver').style.display = "none";
+            }
             
             // also show the start-game button if the player is player 1
             if (data.isVip) {
@@ -958,6 +985,13 @@
                 scene.classList.add("buzzIn");
                 if (document.querySelector('article#gib.active')) {
                   scene.classList.remove("qHidden");
+                  // let the audience members submit their own answers at any time
+                  if (data.i == 0 && document.getElementById('playerNumber').innerText == '9') {
+                    scene.classList.add('yourTurn');
+                    scene.querySelector('input').disabled = false;
+                    scene.querySelector('input').focus();
+                    scene.querySelector('.buzzer').innerText = "Final answer!";
+                  }
                 }
                 break;
               case "disableBuzzIn":
@@ -1043,7 +1077,11 @@
                 scene.querySelector('input').classList.remove("correct");
                 scene.querySelector('input').value = "";
                 scene.querySelector('input').disabled = true;
-                scene.getElementsByClassName('buzzer')[0].innerText = "I know this one!";
+                if (document.getElementById('playerNumber').innerText == '9') {
+                  scene.getElementsByClassName('buzzer')[0].innerText = "Audience members may guess as soon as the question is read.";
+                } else {
+                  scene.getElementsByClassName('buzzer')[0].innerText = "I know this one!";
+                }
                 for (let i = 0; i <= 2; i++) {scene.querySelectorAll('.gibClue')[i].innerHTML = `Wait for clue ${i+1}...`};
                 document.querySelector('#gib .buzzer').style.display = "";
                 break;
@@ -1069,6 +1107,14 @@
                   console.log("could not find optionWrapper");
                 }
                 break;
+              case "score":
+                var scoreElem = document.getElementById("score");
+                scoreElem.innerText = data.formatted;
+                if (data.score < 0) {
+                  scoreElem.classList.add("negative");
+                } else {
+                  scoreElem.classList.remove("negative");
+                }
               case "gibReveal":
                 scene.classList.remove('buzzIn');
                 //scene.classList.add('qHidden');
