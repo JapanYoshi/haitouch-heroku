@@ -188,12 +188,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const btnJoin = document.getElementById('btnJoin');
     const joinStatus = document.getElementById('joinStatus');
     
-    // Query string autofill
-    const searchParams = new URLSearchParams(window.location.search);
-    if (searchParams.has('r')) {
-        document.getElementById('rc').value = searchParams.get('r').toUpperCase();
-    }
-
     /*
      *  Only if the room code and nick are valid, enable the "join" button.
      */
@@ -313,6 +307,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     console.log("client.js event function just ran.")
     document.getElementById("roomClosedBg").hidden = true;
+    /*
+     * Auto-enter room code if applicable.
+     */
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.has('r')) {
+        let rc = searchParams.get('r');
+        inputRc.value = rc;
+        validateChange();
+    }
 });
 console.log("client.js document just ran.")
 
