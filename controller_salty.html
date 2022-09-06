@@ -821,7 +821,7 @@
       <div class="filter"></div>
       <div class="logo active" style="background-image: url('salty/logo_thousand.png')"></div>
       <div class="questionFlex">
-        <div class="audienceWarning">Audience members only get the normal point value, but can answer at any time.</div>
+        <div class="audienceWarning">Audience members can answer at any time.</div>
         <div class="question">
           q
         </div>
@@ -1000,7 +1000,9 @@
                 scene.classList.remove("buzzIn");
                 break;
               case "enableSkip":
-                scene.classList.add("skippable");
+                if (document.getElementById('playerNumber').innerText != '8') {
+                  scene.classList.add("skippable");
+                }
                 break;
               case "disableSkip":
                 scene.classList.remove("skippable");
