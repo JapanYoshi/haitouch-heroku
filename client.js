@@ -218,7 +218,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
     }
     inputRc.addEventListener("input", debounce(validateChange, 125));
-    validateChange();
     /*
      *  If the nickname contains curly Unicode single quotes,
      *  replace them with the allowed typewriter/ASCII single quotes.
@@ -313,7 +312,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     if (searchParams.has('r')) {
         let rc = searchParams.get('r');
         inputRc.value = rc;
-        validateChange();
+        setTimeout(validateChange, 250); // wait a bit before checking for room
     }
     /*
      * Auto-enter last used nickname if applicable.
