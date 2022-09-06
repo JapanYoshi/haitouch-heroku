@@ -135,7 +135,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
         console.log("stringified is", jsonString);
         ws.send(jsonString);
         // keep sending a message once in a while
-        setInterval(()=>{ws.send("{\"type\":\"heartbeat\"}")}, 3000);
+        setInterval(()=>{ws.send("{\"type\":\"heartbeat\"}")}, 5000);
+        // now that we are connected to the server, look up the room code
+        validateChange
     });
     
     ws.onclose = (event => {
@@ -312,7 +314,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     if (searchParams.has('r')) {
         let rc = searchParams.get('r');
         inputRc.value = rc;
-        setTimeout(validateChange, 250); // wait a bit before checking for room
     }
     /*
      * Auto-enter last used nickname if applicable.
