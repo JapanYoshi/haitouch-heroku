@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
      */
     const lastNick = localStorage.getItem("nickname");
     if (lastNick != null) {
-        inputNick.value = lastnick;
+        inputNick.value = lastNick;
         inputNickValidation();
     }
     console.log("client.js event function just ran.")
