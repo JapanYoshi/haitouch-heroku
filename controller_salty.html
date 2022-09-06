@@ -986,7 +986,8 @@
                 if (document.querySelector('article#gib.active')) {
                   scene.classList.remove("qHidden");
                   // let the audience members submit their own answers at any time
-                  if (data.i == 0 && document.getElementById('playerNumber').innerText == '9') {
+                  if (data.i == 0 && document.getElementById('playerNumber').innerText == '8') {
+                    console.log("Since you're in the Audience, you can answer the All Outta Salt any time.");
                     scene.classList.add('yourTurn');
                     scene.querySelector('input').disabled = false;
                     scene.querySelector('input').focus();
@@ -1077,8 +1078,9 @@
                 scene.querySelector('input').classList.remove("correct");
                 scene.querySelector('input').value = "";
                 scene.querySelector('input').disabled = true;
-                if (document.getElementById('playerNumber').innerText == '9') {
-                  scene.getElementsByClassName('buzzer')[0].innerText = "Audience members may guess as soon as the question is read.";
+                if (document.getElementById('playerNumber').innerText == '8') {
+                    console.log("Since you're in the Audience, you can answer the All Outta Salt any time.");
+                  scene.getElementsByClassName('buzzer')[0].innerText = "Audience members don't need to buzz in.";
                 } else {
                   scene.getElementsByClassName('buzzer')[0].innerText = "I know this one!";
                 }
@@ -1133,6 +1135,9 @@
                   options[i].innerHTML = convertBB(data.options[i]);
                   options[i].classList.remove('correct', 'incorrect');
                 };
+                if (document.getElementById("playerNumber").innerText == "9") {
+                  console.log("Since you're in the Audience, you can answer the Thousand Question Question any time, but only get the normal amount.");
+                }
                 break;
               case "rush":
                 scene.classList.remove("active");
