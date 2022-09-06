@@ -304,9 +304,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
     document.getElementById("btnSendToRoom").addEventListener("click", sendToRoom);
     
-
-    console.log("client.js event function just ran.")
-    document.getElementById("roomClosedBg").hidden = true;
     /*
      * Auto-enter room code if applicable.
      */
@@ -316,6 +313,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
         inputRc.value = rc;
         validateChange();
     }
+    console.log("client.js event function just ran.")
+    document.getElementById("roomClosedBg").hidden = true;
 });
 console.log("client.js document just ran.")
 
