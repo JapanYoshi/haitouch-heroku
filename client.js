@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         var nameRegex = RegExp("^[ !',-./0-9?A-Za-z]{0,12}$");
         if (nameRegex.test(inputNick.value)) {
             document.getElementById("btnJoin").disabled = false;
-            localStorage.set("nickname", inputNick.value);
+            localStorage.setItem("nickname", inputNick.value);
         } else {
             document.getElementById("btnJoin").disabled = true;
         }
@@ -318,8 +318,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
     /*
      * Auto-enter last used nickname if applicable.
      */
-    if (localStorage.hasItem("nickname")) {
-        inputNick.value = localStorage.get("nickname");
+    const lastNick = localStorage.getItem("nickname");
+    if (lastNick != null) {
+        inputNick.value = lastnick;
         inputNickValidation();
     }
     console.log("client.js event function just ran.")
