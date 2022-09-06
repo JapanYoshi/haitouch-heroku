@@ -986,8 +986,9 @@
                 if (document.querySelector('article#gib.active')) {
                   scene.classList.remove("qHidden");
                   // let the audience members submit their own answers at any time
-                  if (data.i == 0 && document.getElementById('playerNumber').innerText == '8') {
+                  if (document.getElementById('playerNumber').innerText == '8') {
                     console.log("Since you're in the Audience, you can answer the All Outta Salt any time.");
+                    scene.classList.remove("buzzIn");
                     scene.classList.add('yourTurn');
                     scene.querySelector('input').disabled = false;
                     scene.querySelector('input').focus();
@@ -1226,6 +1227,16 @@
                     data.answers[i] ? 'true': 'false'
                   );
                 };
+                break;
+              case "score":
+                console.log("Not implemented");
+                var score = document.getElementById("score");
+                if (data.value < 0) {
+                  score.classList.add("negative");
+                } else {
+                  score.classList.remove("negative");
+                };
+                score.innerText = data.formatted;
                 break;
               case "finalResult":
                 console.log("LMAO YEET finalResult", data);
