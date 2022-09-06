@@ -324,9 +324,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         inputNickValidation();
     }
     console.log("client.js event function just ran.")
-    setTimeout(()=>{
-        document.getElementById("roomClosedBg").hidden = true;
-    }, 50); // give time to show the hand waving graphic
+    document.getElementById("roomClosedBg").hidden = true;
 });
 console.log("client.js document just ran.")
 
