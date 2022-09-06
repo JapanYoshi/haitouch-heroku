@@ -235,15 +235,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
         document.querySelector("label[for=nick] + .letterCount").innerText = `${el.value.length}/12`;
     }
 
-    inputNick.addEventListener("input", ()=>{
+    const inputNickValidation = ()=>{
         fixQuotes(inputNick);
         var nameRegex = RegExp("^[ !',-./0-9?A-Za-z]{0,12}$");
         if (nameRegex.test(inputNick.value)) {
             document.getElementById("btnJoin").disabled = false;
+            localStorage.set("nickname", inputNick.value);
         } else {
             document.getElementById("btnJoin").disabled = true;
         }
-    });
+    };
+    inputNick.addEventListener("input", inputNickValidation);
     fixQuotes(inputNick);
     inputNick.addEventListener('keypress', (e) => {
         if (e.key == "Enter") {
@@ -312,6 +314,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
         let rc = searchParams.get('r');
         inputRc.value = rc;
         validateChange();
+    }
+    /*
+     * Auto-enter last used nickname if applicable.
+     */
+    if (localStorage.hasItem("nickname")) {
+        inputNick.value = localStorage.get("nickname");
+        inputNickValidation();
     }
     console.log("client.js event function just ran.")
     document.getElementById("roomClosedBg").hidden = true;
