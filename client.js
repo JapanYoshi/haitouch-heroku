@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     console.log("client.js event function just ran.")
     setTimeout(()=>{
         document.getElementById("roomClosedBg").hidden = true;
-    }, 100); // give time to show the hand waving graphic
+    }, 50); // give time to show the hand waving graphic
 });
 console.log("client.js document just ran.")
 
