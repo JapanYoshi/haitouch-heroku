@@ -972,6 +972,16 @@
             scene.querySelector('input').focus();
             scene.querySelector('.buzzer').innerText = "Finish typing";
             break;
+          case "score":
+            console.log("Not implemented");
+            var score = document.getElementById("score");
+            if (data.value < 0) {
+              score.classList.add("negative");
+            } else {
+              score.classList.remove("negative");
+            };
+            score.innerText = data.formatted;
+            break;
           case "changeScene":
             switch (data.sceneName) {
               case "intro":
@@ -1230,16 +1240,6 @@
                     data.answers[i] ? 'true': 'false'
                   );
                 };
-                break;
-              case "score":
-                console.log("Not implemented");
-                var score = document.getElementById("score");
-                if (data.value < 0) {
-                  score.classList.add("negative");
-                } else {
-                  score.classList.remove("negative");
-                };
-                score.innerText = data.formatted;
                 break;
               case "finalResult":
                 console.log("LMAO YEET finalResult", data);
