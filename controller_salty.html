@@ -521,7 +521,9 @@
         margin: 0.25rem 0;
       }
 
-      .buzzer {
+      #game button.buzzer {
+        display: block;
+        width: auto;
         margin: 1rem;
         border-radius: 0.25rem;
         padding: 2rem;
@@ -530,7 +532,7 @@
         font-size: 1.5rem;
       }
 
-      .qHidden .buzzer {
+      #game .qHidden button.buzzer {
         color: var(--col-dark-red);
         opacity: 0.3;
       }
@@ -824,7 +826,7 @@
           </div>
         </div>
         <input type="text" pattern="[ !',-./0-9?A-Za-z]{0,64}" maxlength="64" />
-        <div class="buzzer"></div>
+        <button class="buzzer" type="button"></button>
       </div>
       <div class="skipButton">Yeah, we all get it</div>
     </article>
@@ -979,6 +981,11 @@
             break
           case "gibYourTurn":
             console.log("IT'S YOUR TURN TO TYPE");
+            scene.querySelector('.buzzer').disabled = true;
+            setTimeout(() => {
+              scene.querySelector('.buzzer').disabled = false;
+              scene.classList.add('canSubmit');
+            }, 2000);
             scene.classList.add('yourTurn');
             scene.querySelector('input').disabled = false;
             scene.querySelector('input').focus();
@@ -1104,6 +1111,7 @@
                 scene.querySelector('input').classList.remove("correct");
                 scene.querySelector('input').value = "";
                 scene.querySelector('input').disabled = true;
+                scene.querySelector('buzzer').disabled = true;
                 if (document.getElementById('playerNumber').innerText == '8') {
                     console.log("Since you're in the Audience, you can answer the All Outta Salt any time.");
                   scene.getElementsByClassName('buzzer')[0].innerText = "Audience members don't need to buzz in.";
@@ -1383,7 +1391,7 @@
       'click', () => {
         if (document.getElementById("gib").classList.contains('buzzIn')) {
           sendButton(5, 'all outta salt buzz in');
-        } else if (document.getElementById('gib').classList.contains('yourTurn')) {
+        } else if (document.getElementById('gib').classList.contains('gibSubmit')) {
           updateText(true);
           document.querySelector('#gib .buzzer').style.display = "none";
         }
@@ -1452,6 +1460,15 @@
         console.log("Text changed");
         fixQuotes(document.querySelector('#gib input'));
         sendTextContent();
+      }
+    );
+    document.querySelector('#gib input').addEventListener(
+      'keyup', (e) => {
+        console.log("Keypress", e.which);
+        if (e.which == 13) {
+          updateText(true);
+          document.querySelector('#gib .buzzer').style.display = "none";
+        }
       }
     );
 
