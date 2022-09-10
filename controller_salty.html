@@ -322,7 +322,8 @@
       }
 
       .question {
-        flex: 0 0 auto;
+        flex: 0 1 auto;
+        max-height: 15vh;
         margin: 1rem 1rem 0;
         padding: 1rem;
         border-radius: 0.5rem;
@@ -330,6 +331,10 @@
         background: var(--white-gradient);
         color: black;
         font-size: 1rem;
+      }
+
+      .questionText {
+        overflow-y: auto;
       }
 
       .qHidden .question {
@@ -649,7 +654,6 @@
         top: 50%;
         width: 20rem;
         max-width: 100%;
-        height: 6rem;
         transform: translate(-50%, -50%);
         display: flex;
         flex-direction: column;
@@ -756,7 +760,9 @@
       <div class="filter"></div>
       <div class="questionFlex">
         <div class="question">
-          Q
+          <div class="questionText">
+            Q
+          </div>
         </div>
         <div class="options">
           <div class="option">
@@ -777,12 +783,14 @@
         </div>
       </div>
     </article>
-    <article class="" id="sort">
+    <article id="sort">
       <div class="filter"></div>
       <div class="logo active" style="background-image: url('salty/logo_sorta.png')"></div>
       <div class="questionFlex">
         <div class="question">
-          q
+          <div class="questionText">
+            Q
+          </div>
         </div>
         <div class="sortBox">
           <div class="sortBoth">both</div>
@@ -800,7 +808,9 @@
       <div class="questionFlex">
         <div class="audienceWarning">Audience members can answer at any time.</div>
         <div class="question">
-          q
+          <div class="questionText">
+            Q
+          </div>
         </div>
         <div id="gibClues">
           <div class="gibClue">
@@ -824,7 +834,9 @@
       <div class="questionFlex">
         <div class="audienceWarning">Audience members can answer at any time.</div>
         <div class="question">
-          q
+          <div class="questionText">
+            Q
+          </div>
         </div>
         <div class="options">
           <div class="option">
@@ -1036,7 +1048,7 @@
                 scene.classList.remove("normal", "candy", "rage");
                 scene.classList.add("active", "qHidden", data.sceneName);
 
-                scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
+                scene.getElementsByClassName("questionText")[0].innerHTML = convertBB(data.question);
                 var options = scene.querySelectorAll(".option");
                 for (let i = 0; i < options.length; i++) {
                   options[i].innerHTML = convertBB(data.options[i]);
@@ -1059,7 +1071,7 @@
                 break;
               case "sortQuestion":
                 scene.classList.remove("qHidden");
-                scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
+                scene.getElementsByClassName("questionText")[0].innerHTML = convertBB(data.question);
                 if (scene.getElementsByClassName('correct').length > 0) {
                   scene.getElementsByClassName('correct')[0].classList.remove("correct");
                 }
@@ -1079,7 +1091,7 @@
                 }
                 break;
               case "sortAcc":
-                scene.getElementsByClassName("question")[0].innerHTML =
+                scene.getElementsByClassName("questionText")[0].innerHTML =
                   "Your accuracy was " + data.numerator + "/" + data.denominator + ".";
                 scene.getElementsByClassName('correct')[0].classList.remove("correct");
                 break;
@@ -1088,7 +1100,7 @@
                 scene = document.querySelector("article#gib");
                 scene.classList.add("active", "qHidden");
 
-                scene.getElementsByClassName('question')[0].innerText = data.question;
+                scene.getElementsByClassName('questionText')[0].innerText = data.question;
                 scene.querySelector('input').classList.remove("correct");
                 scene.querySelector('input').value = "";
                 scene.querySelector('input').disabled = true;
@@ -1143,7 +1155,7 @@
                 scene = document.querySelector("article#thousand");
                 scene.classList.add("active", "qHidden");
                 console.log('data.question is', data.question, 'type of data.question is', typeof(data.question));
-                scene.getElementsByClassName("question")[0].innerHTML = convertBB(data.question);
+                scene.getElementsByClassName("questionText")[0].innerHTML = convertBB(data.question);
                 var options = scene.querySelectorAll(".option");
                 for (let i = 0; i < options.length; i++) {
                   options[i].innerHTML = convertBB(data.options[i]);
@@ -1155,6 +1167,7 @@
                 break;
               case "rush":
                 scene.classList.remove("active");
+                document.getElementById("score").display = "none";
                 scene = document.querySelector("article#rush");
                 scene.classList.add("active", "qHidden");
                 scene.querySelector('.clue').innerHTML = convertBB(data.title);
@@ -1165,7 +1178,7 @@
                 break;
               case "rushSection":
                 scene.classList.remove('qHidden', 'reveal');
-                scene.querySelector('.question').innerHTML = convertBB(data.question);
+                scene.querySelector('.questionText').innerHTML = convertBB(data.question);
                 var options = scene.querySelectorAll(".optionRush");
                 var ticks = scene.querySelectorAll("input[type=checkbox]");
                 for (let i = 0; i < options.length; i++) {
@@ -1199,6 +1212,7 @@
                 break;
               case "like":
                 scene.classList.remove("active");
+                document.getElementById("score").display = "none";
                 scene = document.querySelector("article#like");
                 scene.classList.add("active", "qHidden");
                 scene.querySelector('.clue').innerHTML = convertBB(data.title);
@@ -1214,7 +1228,7 @@
                 }
               case "likeSection":
                 scene.classList.remove('qHidden', 'reveal');
-                scene.querySelector('.question').innerHTML = convertBB(data.question);
+                scene.querySelector('.questionText').innerHTML = convertBB(data.question);
                 var options = scene.querySelectorAll(".optionRush");
                 var ticks = scene.querySelectorAll("input[type=checkbox]");
                 for (let i = 0; i < options.length; i++) {
