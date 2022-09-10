@@ -319,6 +319,11 @@
         margin: 1rem 1rem 0;
         color: var(--col-red);
         text-shadow: 0px 1px 4px black;
+        display: none;
+      }
+
+      #game.audience .audienceWarning {
+        display: block;
       }
 
       .question {
@@ -428,6 +433,10 @@
 
       .buzzIn .btnLifesaver {
         opacity: 1.0;
+      }
+
+      #game.audience .btnLifesaver {
+        display: none;
       }
 
       .sortBox {
@@ -952,21 +961,20 @@
             console.log("game-specific handling of message type " + data.type + ", action " + data.action);
             document.getElementById('nickname').innerText = data.nick;
             // set player number at the top of the screen
-            document.getElementById('playerNumber').innerText = data.playerIndex;
             document.getElementById('playerNumber').style.backgroundPositionX = (
               25 * (
                 data.playerIndex < 4 ?
                 data.playerIndex + 1 :
                 data.playerIndex - 4
-              ) + '%'
-            );
+                ) + '%'
+              );
             document.getElementById('playerNumber').style.backgroundPositionY = (
               data.playerIndex < 4 ?
-                '0%' : '100%'
+              '0%' : '100%'
             );
             // also hide the lifesaver button if the player is audience (index 8)
             if (data.playerIndex == 8) {
-              document.querySelector('#normal .btnLifesaver').style.display = "none";
+              document.getElementById('game').classList.add('audience');
             }
             
             // also show the start-game button if the player is player 1
@@ -1016,7 +1024,7 @@
                 if (document.querySelector('article#gib.active')) {
                   scene.classList.remove("qHidden");
                   // let the audience members submit their own answers at any time
-                  if (document.getElementById('playerNumber').innerText == '8') {
+                  if (document.getElementById('game').classList.contains('audience')) {
                     console.log("Since you're in the Audience, you can answer the All Outta Salt any time.");
                     scene.classList.remove("buzzIn");
                     scene.classList.add('yourTurn');
@@ -1112,7 +1120,7 @@
                 scene.querySelector('input').value = "";
                 scene.querySelector('input').disabled = true;
                 scene.querySelector('buzzer').disabled = true;
-                if (document.getElementById('playerNumber').innerText == '8') {
+                if (document.getElementById('game').classList.contains('audience')) {
                     console.log("Since you're in the Audience, you can answer the All Outta Salt any time.");
                   scene.getElementsByClassName('buzzer')[0].innerText = "Audience members don't need to buzz in.";
                 } else {
@@ -1169,7 +1177,7 @@
                   options[i].innerHTML = convertBB(data.options[i]);
                   options[i].classList.remove('correct', 'incorrect');
                 };
-                if (document.getElementById("playerNumber").innerText == "9") {
+                if (document.getElementById('game').classList.contains('audience')) {
                   console.log("Since you're in the Audience, you can answer the Thousand Question Question any time, but only get the normal amount.");
                 }
                 break;
