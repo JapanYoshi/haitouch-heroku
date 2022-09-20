@@ -14,28 +14,35 @@
         font-family: '_Barlow';
         font-weight: normal;
         font-style: normal;
-        src: local('Barlow Semi Condensed Medium'), url('salty/400.ttf');
+        src: url('salty/400.otf');
       }
 
       @font-face {
         font-family: '_Barlow';
         font-weight: normal;
         font-style: italic;
-        src: local('Barlow Semi Condensed Medium Italic'), url('salty/400i.ttf');
+        src: url('salty/400i.otf');
       }
 
       @font-face {
         font-family: '_Barlow';
         font-weight: bold;
         font-style: normal;
-        src: local('Barlow Semi Condensed Extra Bold'), url('salty/700.ttf');
+        src: url('salty/700.otf');
       }
 
       @font-face {
         font-family: '_Barlow';
         font-weight: bold;
         font-style: italic;
-        src: local('Barlow Semi Condensed Extra Bold Italic'), url('salty/700i.ttf');
+        src: url('salty/700i.otf');
+      }
+
+      @font-face {
+        font-family: '_Iosevka';
+        font-weight: normal;
+        font-style: normal;
+        src: url('salty/mono.otf');
       }
 
       :root {
@@ -70,7 +77,11 @@
       }
 
       html {
-        font-family: '_Barlow', sans-serif;
+        font-family: '_Barlow', 'Barlow Semi-Condensed', sans-serif;
+      }
+      
+      code {
+        font-family: '_Iosevka', 'Iosevka', monospace;
       }
 
       body {
