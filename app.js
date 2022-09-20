@@ -417,7 +417,7 @@ wss.on('connection', function(ws) {
                 }
                 break;
             case 'sendToHost':
-                console.log("received sendToHost: roomCode=" + data.roomCode + " and there are " + roomCode.length + " rooms");
+                console.log("received sendToHost: roomCode=" + data.roomCode + " and there are " + Object.keys(rooms).length + " rooms");
                 // expected keys: roomCode (string length 4). should contain additional data
                 if (rooms[data.roomCode]) {
                     // room exists
