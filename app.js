@@ -221,7 +221,7 @@ wss.on('connection', function(ws) {
                         type: 'onRoomMade',
                         roomCode: data.roomCode
                     }));
-                    console.log("Checks succeeded. Room is created.");
+                    console.log("Checks succeeded. Room is created.", rooms[data.roomCode]);
                 } else {
                     // Not enough data
                     sendError("hostRoom message must contain the following keys: roomCode (string length 4), gameName (non-empty string), controller (HTML file name), maxPlayers (int >= 1), maxAudience (int >= 0).");
