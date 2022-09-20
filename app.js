@@ -28,6 +28,9 @@ app.get("/img/:resName", function(req, res) {
     // use params to let people fetch any resource in the folder
     res.sendFile(__dirname + "/img/" + req.params.resName);
 });
+app.get("/heartbeat", function(req, res) {
+    res.sendStatus(200); // send an OK response
+});
 
 app.use("/client", express.static(__dirname + "/client"));
 
@@ -51,8 +54,8 @@ console.log("Server started. Port = " + port);
 
 // Generating a random short ID. (For some reason there's a library for this)
 var shortid = require('shortid');
-const { send } = require("process");
-const { readlink } = require("fs");
+// const { send } = require("process");
+// const { readlink } = require("fs");
 
 // rejects bad room codes
 // lots of them are based on pokemon nickname censors
@@ -76,6 +79,7 @@ let sockets = {};
 // A dictionary with the key being the room code
 // and the value being the assigned ID of the host of that room code.
 let rooms = {};
+// The 8 most recent "heartbeat" messages sent by each client
 let heartbeat_log = [];
 wss.on('connection', function(ws) {
     var name = shortid.generate();
@@ -395,7 +399,7 @@ wss.on('connection', function(ws) {
                 }
                 break;
             case 'sendToRoom':
-                console.log("received sendToRoom");
+                console.log("received sendToRoom: roomCode=" + data.roomCode + " and there are " + roomCode.length + " rooms");
                 // expected keys: roomCode (string length 4). should contain additional data
                 if (rooms[data.roomCode]) {
                     // room exists
@@ -413,7 +417,7 @@ wss.on('connection', function(ws) {
                 }
                 break;
             case 'sendToHost':
-                console.log("received sendToHost");
+                console.log("received sendToHost: roomCode=" + data.roomCode + " and there are " + roomCode.length + " rooms");
                 // expected keys: roomCode (string length 4). should contain additional data
                 if (rooms[data.roomCode]) {
                     // room exists
@@ -439,7 +443,7 @@ wss.on('connection', function(ws) {
 
     // When a socket closes, or disconnects, remove it from the array.
     ws.on('close', function() {
-        if (closeRoomBy(name)) {
+        // if (closeRoomBy(name)) {
             // don't automatically leave, player may rejoin
             // let found = false
             // for (const [k, v] of Object.entries(rooms)) {
@@ -455,10 +459,10 @@ wss.on('connection', function(ws) {
             //         }
             //     }
             //     if (found) {break;}
-            // }
-        };
+            // }    
+        // };
         delete sockets[name];
-        console.log(`Bye, ${name}!`);
+        console.log(`Socket ${name} is disconnected.`);
         console.log("sockets dict now has these keys: " + Object.keys(sockets))
         return;
     });
@@ -466,32 +470,28 @@ wss.on('connection', function(ws) {
     // Close the room, whether due to unintentional disconnection or due to manual closing.
     // Returns false if the room was found and closed. Returns true otherwise.
     function closeRoomBy(hostName) {
-        let found = false
         for (const [k, v] of Object.entries(rooms)) {
             if (v.host == hostName) {
-                found = true
-                console.log("Found the room. Room code is " + k);
+                console.log(hostName + " is hosting a room. Room code is " + k);
                 v.playerNames.forEach((e) => {
                     if (sockets.hasOwnProperty(e)) {
                         sockets[e].send(JSON.stringify({
                             type: 'onRoomClosed',
                             message: ""
                         }) );
-                        console.log("Notified " + e + " that the room is closed.");
+                        console.log("Notified socket " + e + " that the room is closed.");
                     }
                 });
                 ws.send(JSON.stringify({
                     type: "onRoomClose",
-                    message: "Room " + k + " closed."
+                    message: "Your room " + k + " was closed."
                 }));
                 delete rooms[k];
                 return false
             }
         }
-        if (!found) {
-            sendError("You are not hosting a room.");
-            return true
-        }
+        console.log("Socket " + hostName + " is not hosting a room.");
+        return true
     }
 
     function sendOk(message) {
