@@ -498,6 +498,10 @@ wss.on('connection', function(ws) {
         return;
     });
 
+    ws.on('error', function(error) {
+        console.error("An error occurred on the Websocket connection.", error);
+    });
+
     // Close the room, whether due to unintentional disconnection or due to manual closing.
     // Returns false if the room was found and closed. Returns true otherwise.
     function closeRoomBy(hostName) {
@@ -538,4 +542,8 @@ wss.on('connection', function(ws) {
             message: message
         }));
     }
+});
+
+wss.on('error', function(error) {
+    console.error("An error occurred on the underlying server.", error});
 });
