@@ -278,18 +278,22 @@ wss.on('connection', function(ws) {
                         console.log(rm);
                         // is user already in? (if so, rejoin)
                         if (rm.playerNames.includes(name)) {
-                            sockets[rm.host].send(JSON.stringify({
-                                type: 'onPlayerJoin',
-                                name: name,
-                                nick: data.nick
-                            }));
-                            rm.playerNames.push(name);
-                            ws.send(JSON.stringify({
-                                type: 'onJoinRoom',
-                                message: "Rejoined Room " + data.roomCode + " successfully.",
-                                controller: rm.controller
-                            }) );
-                            console.log("Welcome back to Room " + data.roomCode + ", " + name + "!");
+                            if (rm.host in Object.keys(sockets)) {
+                                sockets[rm.host].send(JSON.stringify({
+                                    type: 'onPlayerJoin',
+                                    name: name,
+                                    nick: data.nick
+                                }));
+                                rm.playerNames.push(name);
+                                ws.send(JSON.stringify({
+                                    type: 'onJoinRoom',
+                                    message: "Rejoined Room " + data.roomCode + " successfully.",
+                                    controller: rm.controller
+                                }) );
+                                console.log("Welcome back to Room " + data.roomCode + ", " + name + "!");
+                            } else {
+                                console.error("Host is gone! WTF?");
+                            }
                             break;
                         }
                         // is room full?
@@ -467,8 +471,9 @@ wss.on('connection', function(ws) {
     });
 
     // When a socket closes, or disconnects, remove it from the array.
-    ws.on('close', function() {
+    ws.on('close', function(code, reason) {
         console.log("Socket closed: " + name);
+        console.log("code = " + code + " and reason = " + reason);
         // if (closeRoomBy(name)) {
             // don't automatically leave, player may rejoin
             // let found = false
