@@ -545,5 +545,5 @@ wss.on('connection', function(ws) {
 });
 
 wss.on('error', function(error) {
-    console.error("An error occurred on the underlying server.", error});
+    console.error("An error occurred on the underlying server.", error);
 });
