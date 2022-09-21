@@ -15,4 +15,4 @@ jobs:
         id: ping
         uses: soul-wish/ping-url-javascript-action@v1.1
         with:
-          url: 'https://haitouch.onrender.com/api/health'
+          url: 'https://haitouch.onrender.com/heartbeat'
