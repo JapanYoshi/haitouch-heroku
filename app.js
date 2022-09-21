@@ -275,7 +275,7 @@ wss.on('connection', function(ws) {
                     if (rooms[data.roomCode]) {
                         // room exists
                         let rm = rooms[data.roomCode];
-                        console.log("Sockets:", Object.keys(socket), "Room:", rm);
+                        console.log("Sockets:", Object.keys(sockets), "Room:", rm);
                         // is user already in? (if so, rejoin)
                         if (rm.playerNames.includes(name)) {
                             if (rm.host in Object.keys(sockets)) {
