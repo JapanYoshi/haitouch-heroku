@@ -1,0 +1,18 @@
+name: Keep Alive
+# Tries to keep the Render.com page alive by continuously pinging the health check URL every 5 minutes.
+
+on:
+  schedule:
+  - cron: '*/5 * * * *'
+  # Every 5 minutes.
+
+jobs:
+  ping_url:
+    runs-on: ubuntu-latest
+    name: Ping Health Check
+    steps:
+      - name: Check the URL
+        id: ping
+        uses: soul-wish/ping-url-javascript-action@v1.1
+        with:
+          url: 'https://haitouch.onrender.com/api/health'
