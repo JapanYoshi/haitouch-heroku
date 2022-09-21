@@ -474,23 +474,24 @@ wss.on('connection', function(ws) {
     ws.on('close', function(code, reason) {
         console.log("Socket closed: " + name);
         console.log("code = " + code + " and reason = " + reason);
-        // if (closeRoomBy(name)) {
-            // don't automatically leave, player may rejoin
-            // let found = false
-            // for (const [k, v] of Object.entries(rooms)) {
-            //     for (i = 0; i < v.playerNames.length; i++) {
-            //         if (v.playerNames[i] == name) {
-            //             found = true;
-            //             v.playerNames.splice(i, 1);
-            //             sockets[v.host].send(JSON.stringify({
-            //                 type: 'onRoomLeave',
-            //                 message: name
-            //             }));
-            //             break
-            //         }
-            //     }
-            //     if (found) {break;}
-            // }    
+        let notHostingRoom = closeRoomBy(name);
+        // if (notHostingRoom) {
+        //     // don't automatically leave, player may rejoin
+        //     let found = false
+        //     for (const [k, v] of Object.entries(rooms)) {
+        //         for (i = 0; i < v.playerNames.length; i++) {
+        //             if (v.playerNames[i] == name) {
+        //                 found = true;
+        //                 v.playerNames.splice(i, 1);
+        //                 sockets[v.host].send(JSON.stringify({
+        //                     type: 'onRoomLeave',
+        //                     message: name
+        //                 }));
+        //                 break
+        //             }
+        //         }
+        //         if (found) {break;}
+        //     }
         // };
         delete sockets[name];
         console.log(`Socket ${name} is disconnected.`);
