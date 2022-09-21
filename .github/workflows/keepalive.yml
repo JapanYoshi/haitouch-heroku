@@ -13,6 +13,6 @@ jobs:
     steps:
       - name: Check the URL
         id: ping
-        uses: soul-wish/ping-url-javascript-action@v1.1
+        uses: soul-wish/ping-url-javascript-action@v1.2
         with:
           url: 'https://haitouch.onrender.com/heartbeat'
